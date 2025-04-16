@@ -1,10 +1,26 @@
 /**index.wxss**/
+/* 统一的背景和色调 */
 .container {
   padding: 0;
-  background-color: #000;
+  background-color: #080010;
   min-height: 100vh;
   color: #fff;
   position: relative;
+}
+
+/* 页面背景渐变效果 */
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 25% 10%, rgba(255, 90, 200, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 60%, rgba(120, 90, 255, 0.03) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* 顶部标题栏 */
@@ -26,14 +42,14 @@
   color: #fff;
 }
 
-/* 英雄区域 - 赛博风格网格背景 */
+/* 英雄区域 - 与整体设计融合 */
 .hero-section {
   position: relative;
   width: 100%;
-  height: 520rpx;
+  height: 500rpx;
   overflow: hidden;
-  margin-bottom: 30rpx;
-  background-color: #000;
+  margin-bottom: 0;
+  background-color: transparent;
 }
 
 /* 赛博格网格背景 */
@@ -42,11 +58,11 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 120%;
   background-image: 
-    linear-gradient(to right, rgba(50, 50, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(50, 50, 255, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
+    linear-gradient(to right, rgba(255, 90, 200, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 90, 200, 0.2) 1px, transparent 1px);
+  background-size: 40px 40px;
   transform: perspective(500px) rotateX(60deg);
   transform-origin: center bottom;
   z-index: 1;
@@ -60,6 +76,18 @@
   100% {
     background-position: 0 1000px;
   }
+}
+
+/* 英雄区域过渡效果 */
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: -5rpx;
+  left: 0;
+  width: 100%;
+  height: 100rpx;
+  background: linear-gradient(to bottom, transparent, #080010);
+  z-index: 5;
 }
 
 .hero-content {
@@ -78,7 +106,7 @@
   position: absolute;
   top: 15%;
   left: 30%;
-  background: linear-gradient(to right, #4d9aff, #a566ff);
+  background: linear-gradient(to right, #ff5acd, #b066ff);
   color: white;
   padding: 15rpx 40rpx;
   border-radius: 50rpx;
@@ -86,6 +114,8 @@
   font-weight: bold;
   z-index: 3;
   animation: float 3s ease-in-out infinite;
+  box-shadow: 0 5rpx 15rpx rgba(255, 90, 200, 0.5);
+  text-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.3);
 }
 
 @keyframes float {
@@ -211,14 +241,19 @@
   font-size: 28rpx;
 }
 
-/* 功能卡片区 */
+/* 功能卡片区域 - 与英雄区域无缝衔接 */
 .features-section {
-  padding: 20rpx 30rpx;
+  width: 90%;
+  margin: -60rpx auto 0;
+  padding: 30rpx 0 20rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
+  position: relative;
+  z-index: 10;
 }
 
+/* 卡片样式统一 */
 .feature-card {
   width: 100%;
   height: 180rpx;
@@ -228,34 +263,29 @@
   align-items: center;
   padding: 20rpx;
   position: relative;
-  background-color: transparent;
+  background-color: rgba(20, 5, 30, 0.5);
   box-sizing: border-box;
   transition: all 0.3s ease;
+  box-shadow: 0 5rpx 20rpx rgba(0, 0, 0, 0.25),
+              0 0 10rpx rgba(255, 90, 200, 0.1);
+  border: 1px solid rgba(255, 90, 200, 0.08);
 }
 
-.feature-card:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-/* AI绘画卡片 - 紫色 */
+/* 卡片渐变样式 */
 .feature-card:nth-child(1) {
-  background: linear-gradient(to right, #7e57ff, #a05aff);
+  background: linear-gradient(to right, rgba(126, 87, 255, 0.5), rgba(160, 90, 255, 0.5));
 }
 
-/* AI转动漫卡片 - 蓝紫色 */
 .feature-card:nth-child(2) {
-  background: linear-gradient(to right, #4158D0, #9969c7);
+  background: linear-gradient(to right, rgba(65, 88, 208, 0.5), rgba(153, 105, 199, 0.5));
 }
 
-/* AI换脸卡片 - 绿色 */
 .feature-card:nth-child(3) {
-  background: linear-gradient(to right, #00c07f,rgb(133, 238, 119));
+  background: linear-gradient(to right, rgba(0, 192, 127, 0.5), rgba(133, 238, 119, 0.5));
 }
 
-/* AI头像生成器卡片 - 粉紫色 */
 .feature-card:nth-child(4) {
-  background: linear-gradient(to right, #ff6ec4, #7873f5);
+  background: linear-gradient(to right, rgba(255, 110, 196, 0.5), rgba(120, 115, 245, 0.5));
 }
 
 .feature-icon-container {
@@ -384,14 +414,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30rpx;
+  padding: 0 0 15rpx 0;
   margin-bottom: 20rpx;
+  border-bottom: 1px solid rgba(255, 90, 200, 0.1);
 }
 
 .section-title {
-  font-size: 34rpx;
-  font-weight: bold;
+  font-size: 32rpx;
+  font-weight: 600;
   color: #fff;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -16rpx;
+  left: 0;
+  width: 60rpx;
+  height: 3rpx;
+  background: linear-gradient(to right, rgba(255, 90, 200, 0.7), rgba(120, 90, 255, 0.7));
 }
 
 .section-more {
@@ -404,28 +446,34 @@
   color: #fff;
 }
 
-/* 精选作品 */
+/* 精选作品区域 */
 .featured-works-section {
-  padding: 20rpx 0 40rpx;
+  width: 90%;
+  margin: 20rpx auto;
+  padding: 20rpx 0 30rpx;
+  position: relative;
+  z-index: 2;
 }
 
 .works-grid {
   width: 100%;
-  padding: 0 30rpx;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   box-sizing: border-box;
 }
 
+/* 统一的卡片样式 */
 .work-card {
   width: calc(50% - 10rpx);
-  background-color: #1a1a1a;
+  background-color: rgba(20, 5, 30, 0.5);
   border-radius: 16rpx;
   overflow: hidden;
   margin-bottom: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.25), 
+              0 0 8rpx rgba(255, 90, 200, 0.1);
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 90, 200, 0.08);
 }
 
 .work-card:active {
@@ -476,20 +524,36 @@
   color: #999;
 }
 
-/* 创作提示 */
+/* 创作号召区域 */
 .cta-section {
-  width: 100%;
-  padding: 30rpx 0 60rpx;
+  width: 90%;
+  padding: 30rpx 0 50rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 10rpx auto 40rpx;
+  position: relative;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -5%;
+  width: 110%;
+  height: 100%;
+  background: radial-gradient(ellipse at bottom, rgba(255, 90, 200, 0.05), transparent 70%);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .cta-text {
-  font-size: 32rpx;
+  font-size: 34rpx;
   color: #fff;
-  margin-bottom: 20rpx;
+  margin-bottom: 25rpx;
+  text-shadow: 0 0 10rpx rgba(255, 90, 200, 0.5);
+  font-weight: 500;
 }
 
 .cta-btn {
@@ -497,13 +561,16 @@
   height: 80rpx;
   line-height: 80rpx;
   text-align: center;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.5), rgba(139, 92, 246, 0.5));
   color: #fff;
   border-radius: 40rpx;
   font-size: 30rpx;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 5rpx 15rpx rgba(0, 0, 0, 0.25),
+              0 0 10rpx rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .cta-btn:active {
@@ -527,4 +594,141 @@
 .cta-btn:active::after {
   opacity: 1;
   transform: scale(1);
+}
+
+/* 3D装饰元素 */
+.decorative-elements {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.floating-cube {
+  position: absolute;
+  background: rgba(255, 130, 230, 0.3);
+  border: 1px solid rgba(255, 160, 240, 0.6);
+  box-shadow: 0 0 20px rgba(255, 100, 220, 0.6);
+  transform-style: preserve-3d;
+  animation: floatAndRotate 10s ease-in-out infinite;
+}
+
+.cube-1 {
+  width: 40rpx;
+  height: 40rpx;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.cube-2 {
+  width: 30rpx;
+  height: 30rpx;
+  bottom: 30%;
+  right: 15%;
+  animation-delay: -3s;
+}
+
+.cube-3 {
+  width: 50rpx;
+  height: 50rpx;
+  top: 35%;
+  right: 25%;
+  animation-delay: -6s;
+}
+
+@keyframes floatAndRotate {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20rpx) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+/* 光影效果 */
+.light-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(255, 80, 200, 0.2) 0%, transparent 30%),
+    radial-gradient(circle at 70% 60%, rgba(138, 43, 226, 0.2) 0%, transparent 40%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.shadow-3d {
+  box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.4),
+              0 0 15rpx rgba(255, 80, 200, 0.5);
+}
+
+.elevation-card {
+  border-radius: 15rpx;
+  box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.5),
+              0 0 30rpx rgba(255, 80, 200, 0.5);
+  overflow: hidden;
+  background: rgba(50, 25, 55, 0.6);
+}
+
+.glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 140, 230, 0.5) 0%, transparent 70%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 浮动动画样式 */
+.floating {
+  animation: float 4s ease-in-out infinite !important;
+}
+
+.floating-delay {
+  animation: float 4s ease-in-out infinite !important;
+  animation-delay: -1.5s !important;
+}
+
+.floating-delay-2 {
+  animation: float 4s ease-in-out infinite !important;
+  animation-delay: -3s !important;
+}
+
+/* 添加光晕和亮点 */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 15%),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 15%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(255, 0, 170, 0.1) 0%, 
+    transparent 50%, 
+    rgba(138, 43, 226, 0.1) 100%);
+  z-index: 2;
+  pointer-events: none;
 } 
