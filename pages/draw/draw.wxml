@@ -107,6 +107,13 @@
       <view class="section-title">创作结果</view>
       <view class="image-container">
         <image class="generated-image" src="{{generatedImage}}" mode="widthFix" show-menu-by-longpress></image>
+        
+        <!-- 添加AI生成的图片描述 -->
+        <view class="image-description" wx:if="{{imageDescription && imageDescription.length > 0}}">
+          <view class="description-title">AI描述</view>
+          <view class="description-content">{{imageDescription}}</view>
+        </view>
+        
         <view class="image-actions">
           <view class="action-item" bindtap="saveImage">
             <image class="action-icon" src="/static/images/icons/save.png"></image>

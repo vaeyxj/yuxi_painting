@@ -376,6 +376,28 @@
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
 }
 
+/* 图片描述样式 */
+.image-description {
+  margin-top: 15rpx;
+  padding: 15rpx;
+  background-color: rgba(120, 90, 255, 0.1);
+  border-radius: 8rpx;
+  border-left: 4rpx solid rgba(120, 90, 255, 0.6);
+}
+
+.description-title {
+  font-size: 24rpx;
+  color: rgba(120, 90, 255, 0.9);
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.description-content {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 36rpx;
+}
+
 .image-actions {
   display: flex;
   justify-content: space-around;

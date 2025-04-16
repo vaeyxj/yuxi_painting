@@ -1,5 +1,9 @@
 const app = getApp()
 
+// 配置参数
+const DEEPSEEK_API_KEY = 'sk-4c1d1a5bdd5d4d0db21d418117cb406b'; // 您的DeepSeek API密钥，请替换为实际密钥
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions'; // Deepseek API 地址
+
 // 基础请求封装
 const request = (url, method, data, needToken = true) => {
   return new Promise((resolve, reject) => {
@@ -72,6 +76,114 @@ const showError = (msg) => {
   })
 }
 
+// 调用DeepSeek API生成图片
+const callDeepseekAPI = (params) => {
+  // 构建prompt模板
+  const promptTemplate = `你现在是一个AI图片生成机器人，等待我给你一些提示(不需要举例)，你用你的想象力去描述这幅图片，并转换成英文用纯文本的形式填充到下面url的占位符{prompt)中：
+![image](https://image.pollinations.ai/prompt/{prompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux)
+生成后给出中文提示语`;
+  
+  // 将所有参数转换为字符串并拼接
+  const userPrompt = Object.entries(params)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join(', ');
+  
+  console.log('发送到Deepseek的提示词:', userPrompt);
+  
+  // 构建请求参数
+  const requestData = {
+    model: "deepseek-chat",
+    messages: [
+      { role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: `${promptTemplate}\n\n${userPrompt}` }
+    ],
+    stream: false
+  };
+  
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: DEEPSEEK_API_URL,
+      method: 'POST',
+      data: requestData,
+      header: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+      },
+      success: (res) => {
+        console.log('Deepseek API原始响应:', res);
+        
+        if (res.statusCode === 200 && res.data && res.data.choices && res.data.choices.length > 0) {
+          // 成功响应，处理DeepSeek返回的内容
+          const content = res.data.choices[0].message.content;
+          console.log('Deepseek返回内容:', content);
+          
+          // 从返回内容中提取图片URL
+          const urlMatch = content.match(/\!\[image\]\((https:\/\/image\.pollinations\.ai\/prompt\/[^)]+)\)/);
+          
+          if (urlMatch && urlMatch[1]) {
+            // 提取成功，返回图片URL和中文描述
+            const imageUrl = urlMatch[1];
+            console.log('提取的图片URL:', imageUrl);
+            
+            // 提取中文描述部分
+            const descriptionMatch = content.match(/生成后给出中文提示语([\s\S]*)/);
+            const description = descriptionMatch ? descriptionMatch[1].trim() : "AI创作的图像";
+            console.log('提取的中文描述:', description);
+            
+            resolve({
+              imageUrl: imageUrl,
+              description: description,
+              rawContent: content
+            });
+          } else {
+            // 无法提取URL，尝试直接从内容中找出英文提示词并构建URL
+            console.warn('无法从内容中提取URL，尝试其他方式');
+            
+            // 尝试提取英文提示词部分
+            const englishPromptMatch = content.match(/prompt\/(.*?)(\?|$)/);
+            if (englishPromptMatch && englishPromptMatch[1]) {
+              const englishPrompt = englishPromptMatch[1];
+              const constructedUrl = `https://image.pollinations.ai/prompt/${englishPrompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux`;
+              console.log('构建的URL:', constructedUrl);
+              
+              resolve({
+                imageUrl: constructedUrl,
+                description: "AI根据您的提示创作的图像",
+                rawContent: content
+              });
+            } else {
+              // 完全无法提取，使用原始提示词构建URL
+              const fallbackPrompt = encodeURIComponent(params.prompt);
+              const fallbackUrl = `https://image.pollinations.ai/prompt/${fallbackPrompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux`;
+              console.log('使用原始提示词构建URL:', fallbackUrl);
+              
+              resolve({
+                imageUrl: fallbackUrl,
+                description: "根据提示词直接生成的图像",
+                rawContent: content
+              });
+            }
+          }
+        } else {
+          // 请求失败
+          console.error('Deepseek API请求失败:', res);
+          reject({
+            error: `请求失败，状态码: ${res.statusCode}`,
+            data: res.data
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('网络请求失败:', err);
+        reject({
+          error: '网络请求失败',
+          details: err
+        });
+      }
+    });
+  });
+};
+
 // 导出API方法
 module.exports = {
   // 用户相关
@@ -92,7 +204,10 @@ module.exports = {
     // 判断是否使用模拟数据（没有实际后端服务或明确设置了使用模拟数据）
     const useMockData = !app.globalData.apiBaseUrl || app.globalData.useMockData;
     
+    console.log('是否使用模拟数据:', useMockData);
+    
     if (useMockData) {
+      console.log('使用模拟数据生成图片');
       return new Promise((resolve) => {
         // 模拟网络延迟
         setTimeout(() => {
@@ -103,18 +218,23 @@ module.exports = {
           if (params.style) {
             switch(params.style) {
               case 'realistic':
+              case '写实风格':
                 imageUrl = '/static/images/samples/realistic.jpg';
                 break;
               case 'cartoon':
+              case '卡通风格':
                 imageUrl = '/static/images/samples/cartoon.jpg';
                 break;
               case 'ink':
+              case '水墨风格':
                 imageUrl = '/static/images/samples/ink.jpg';
                 break;
               case 'oil':
+              case '油画风格':
                 imageUrl = '/static/images/samples/oil.jpg';
                 break;
               case 'anime':
+              case '动漫风格':
                 imageUrl = '/static/images/samples/anime.jpg';
                 break;
               default:
@@ -122,20 +242,53 @@ module.exports = {
             }
           }
           
+          console.log('模拟生成图片:', imageUrl);
+          
           // 返回模拟数据
           resolve({
             imageUrl: imageUrl,
             width: params.width,
             height: params.height,
             prompt: params.prompt,
-            style: params.style
+            style: params.style,
+            description: "这是一个AI生成的图像，根据您的提示生成"
           })
         }, 2000) // 模拟2秒网络延迟
       })
     }
     
-    // 生产环境使用真实API
-    return request('/draw/generate', 'POST', params)
+    console.log('调用真实的Deepseek API');
+    // 生产环境使用 Deepseek API
+    return callDeepseekAPI(params)
+      .then(res => {
+        console.log('Deepseek API响应成功:', res);
+        return {
+          imageUrl: res.imageUrl,
+          width: params.width,
+          height: params.height,
+          prompt: params.prompt,
+          style: params.style,
+          description: res.description
+        };
+      })
+      .catch(err => {
+        console.error('Deepseek API调用失败:', err);
+        // 在API调用失败的情况下，返回一个错误信息和默认图片
+        showError('AI接口调用失败，请稍后重试');
+        
+        // 使用备选方案：直接使用pollinations.ai生成
+        const fallbackPrompt = encodeURIComponent(params.prompt);
+        const fallbackUrl = `https://image.pollinations.ai/prompt/${fallbackPrompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux`;
+        
+        return {
+          imageUrl: fallbackUrl,
+          width: params.width,
+          height: params.height,
+          prompt: params.prompt,
+          style: params.style,
+          description: "备用方案生成的图像"
+        };
+      });
   },
   
   getDrawHistory: () => {
@@ -222,9 +375,6 @@ module.exports = {
         fail: (err) => {
           showError('上传失败')
           reject(err)
-        },
-        complete: () => {
-          progress && progress(100)
         }
       })
     })

@@ -26,6 +26,8 @@ Page({
     isGenerating: false,
     // 生成的图片
     generatedImage: '',
+    // 生成的图片描述
+    imageDescription: '',
     // 生成历史
     history: [],
     // 是否显示历史记录
@@ -150,7 +152,7 @@ Page({
     const styles = this.data.styles.map((style, idx) => {
       return {
         ...style,
-        selected: idx === styleId
+        selected: style.name === item.style // 使用名称匹配更可靠
       }
     });
     
@@ -158,7 +160,8 @@ Page({
     const updateData = {
       prompt: item.prompt,
       styles,
-      generatedImage: item.imageUrl
+      generatedImage: item.imageUrl,
+      imageDescription: item.description || '' // 添加描述
     };
     
     // 如果历史记录中有比例信息，也一并恢复
@@ -196,7 +199,8 @@ Page({
     // 设置生成状态
     this.setData({
       isGenerating: true,
-      generatedImage: ''
+      generatedImage: '',
+      imageDescription: '' // 清空之前的描述
     })
 
     // 获取选中的风格
@@ -223,11 +227,12 @@ Page({
     // 构建请求参数
     const params = {
       prompt: this.data.prompt,
-      style: selectedStyle.id,
+      style: selectedStyle.name, // 使用风格名称，更具描述性
       creativity: this.data.params.creativity,
       quality: this.data.params.quality,
       width: width,  // 图像宽度
-      height: height  // 图像高度
+      height: height,  // 图像高度
+      ratio: this.data.params.ratio // 添加比例信息
     }
 
     // 显示加载提示
@@ -237,7 +242,6 @@ Page({
     })
 
     // 调用后端API生成图片
-    // 实际项目中使用真实的API，目前使用模拟数据
     api.generateImage(params)
       .then(res => {
         // 隐藏加载提示
@@ -246,14 +250,16 @@ Page({
         // 处理成功响应
         const result = {
           success: true,
-          imageUrl: res.imageUrl || '/static/images/sample_generated.jpg', // 使用API返回的或默认图片
+          imageUrl: res.imageUrl, 
+          description: res.description || '基于您的提示词创作的图像',
           timestamp: Date.now()
         }
 
-        // 更新生成图片
+        // 更新生成图片和描述
         this.setData({
           isGenerating: false,
-          generatedImage: result.imageUrl
+          generatedImage: result.imageUrl,
+          imageDescription: result.description
         })
 
         // 添加到历史记录
@@ -263,6 +269,7 @@ Page({
           prompt: this.data.prompt,
           style: selectedStyle.name,
           imageUrl: result.imageUrl,
+          description: result.description,
           timestamp: result.timestamp,
           timeStr: '刚刚',
           ratio: this.data.params.ratio // 保存图像比例
