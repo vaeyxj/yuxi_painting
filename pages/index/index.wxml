@@ -36,56 +36,14 @@
 
   <!-- 功能卡片区 -->
   <view class="features-section">
-    <!-- AI绘画功能卡片 -->
-    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/draw/draw">
+    <view class="feature-card" wx:for="{{features}}" wx:key="id" bindtap="navigateToFeature" data-path="{{item.path}}">
       <view class="feature-icon-container">
-        <image class="feature-icon" src="/static/images/features/palette.png" mode="aspectFit"></image>
+        <image class="feature-icon" src="{{item.icon}}" mode="aspectFit"></image>
       </view>
       <view class="feature-info">
-        <view class="feature-name">AI绘画</view>
-        <view class="feature-desc">让你也成为天才画家</view>
+        <view class="feature-name">{{item.name}}</view>
+        <view class="feature-desc">{{item.desc}}</view>
       </view>
-      <!-- 卡片右侧图标 -->
-      <image class="feature-right-image" src="/static/images/features/draw-right.png" mode="aspectFit"></image>
-    </view>
-
-    <!-- AI转动漫功能卡片 -->
-    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/anime/anime">
-      <view class="feature-icon-container">
-        <image class="feature-icon" src="/static/images/features/anime-avatar.png" mode="aspectFit"></image>
-      </view>
-      <view class="feature-info">
-        <view class="feature-name">AI转动漫</view>
-        <view class="feature-desc">让自己成为漫画的主角</view>
-      </view>
-      <!-- 卡片右侧图标 -->
-      <image class="feature-right-image" src="/static/images/features/anime-right.png" mode="aspectFit"></image>
-    </view>
-
-    <!-- AI换脸功能卡片 -->
-    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/face-swap/face-swap">
-      <view class="feature-icon-container">
-        <image class="feature-icon" src="/static/images/features/face-swap.png" mode="aspectFit"></image>
-      </view>
-      <view class="feature-info">
-        <view class="feature-name">AI换脸</view>
-        <view class="feature-desc">让你轻松掌握易容术</view>
-      </view>
-      <!-- 卡片右侧图标 -->
-      <image class="feature-right-image" src="/static/images/features/face-right.png" mode="aspectFit"></image>
-    </view>
-
-    <!-- AI头像生成器功能卡片 -->
-    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/avatar/avatar">
-      <view class="feature-icon-container">
-        <image class="feature-icon" src="/static/images/features/avatar-maker.png" mode="aspectFit"></image>
-      </view>
-      <view class="feature-info">
-        <view class="feature-name">AI头像生成器</view>
-        <view class="feature-desc">让你DIY制作 AI萌拍头像</view>
-      </view>
-      <!-- 卡片右侧图标 -->
-      <image class="feature-right-image" src="/static/images/features/avatar-right.png" mode="aspectFit"></image>
     </view>
   </view>
 

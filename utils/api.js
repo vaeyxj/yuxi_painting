@@ -96,19 +96,14 @@ module.exports = {
     return request('/draw/history', 'GET')
   },
   
-  // AI换装相关
-  dressImage: (params) => {
-    return request('/dress/generate', 'POST', params)
+  // AI转动漫相关
+  generateAnime: (params) => {
+    return request('/anime/generate', 'POST', params)
   },
   
-  // AI扩图相关
-  expandImage: (params) => {
-    return request('/expand/generate', 'POST', params)
-  },
-  
-  // AI修复相关
-  restoreImage: (params) => {
-    return request('/restore/generate', 'POST', params)
+  // AI换脸相关
+  faceSwap: (params) => {
+    return request('/face-swap/generate', 'POST', params)
   },
   
   // AI头像相关

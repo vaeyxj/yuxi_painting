@@ -15,32 +15,28 @@ Page({
         name: 'AI绘画',
         icon: '/static/images/features/palette.png',
         path: '/pages/draw/draw',
-        desc: '让你也成为天才画家',
-        rightImage: '/static/images/features/draw-right.png'
+        desc: '一键将你的想象变为现实'
       },
       {
         id: 'anime',
         name: 'AI转动漫',
         icon: '/static/images/features/anime-avatar.png',
         path: '/pages/anime/anime',
-        desc: '让自己成为漫画的主角',
-        rightImage: '/static/images/features/anime-right.png'
+        desc: '瞬间变身你专属的二次元形象'
       },
       {
         id: 'face-swap',
         name: 'AI换脸',
         icon: '/static/images/features/face-swap.png',
         path: '/pages/face-swap/face-swap',
-        desc: '让你轻松掌握易容术',
-        rightImage: '/static/images/features/face-right.png'
+        desc: '突破现实界限，体验不同身份'
       },
       {
         id: 'avatar',
         name: 'AI头像生成器',
         icon: '/static/images/features/avatar-maker.png',
         path: '/pages/avatar/avatar',
-        desc: '让你DIY制作 AI萌拍头像',
-        rightImage: '/static/images/features/avatar-right.png'
+        desc: '打造专属你的数字化形象'
       }
     ],
     
@@ -91,11 +87,6 @@ Page({
     this.getBanners()
     // 获取精选作品
     this.getFeaturedWorks()
-    
-    // 调试代码，查看banners数组
-    setTimeout(() => {
-      console.log('当前轮播图数据:', this.data.banners)
-    }, 1000)
   },
   
   // 获取用户信息
@@ -225,7 +216,6 @@ Page({
         })
         break
       default:
-        // 默认处理
         break
     }
     
@@ -236,7 +226,6 @@ Page({
   
   // 点击英雄区域
   onHeroTap() {
-    // 可以导航到某个主推功能或者活动页
     wx.navigateTo({
       url: '/pages/draw/draw'
     })
@@ -249,7 +238,7 @@ Page({
     })
   },
   
-  // CTA按钮点击 - 已通过navigateToFeature处理，此方法可选
+  // CTA按钮点击
   onCtaTap() {
     wx.navigateTo({
       url: '/pages/draw/draw'
