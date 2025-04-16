@@ -28,6 +28,14 @@ Page({
     generatedImage: '',
     // 生成的图片描述
     imageDescription: '',
+    // 图片是否正在加载
+    isImageLoading: false,
+    // 图片是否加载失败
+    imageLoadError: false,
+    // 生成进度 (0-100)
+    generationProgress: 0,
+    // 是否显示进度条
+    showProgress: false,
     // 生成历史
     history: [],
     // 是否显示历史记录
@@ -42,6 +50,13 @@ Page({
   onShow: function () {
     // 页面显示时刷新历史记录
     this.getHistory()
+    
+    // 如果有生成的图片但未确认加载状态，设置为加载中
+    if (this.data.generatedImage && !this.data.isImageLoading && !this.data.imageLoadError) {
+      this.setData({
+        isImageLoading: true
+      });
+    }
     
     // 处理从首页跳转的情况
     const app = getApp();
@@ -161,7 +176,8 @@ Page({
       prompt: item.prompt,
       styles,
       generatedImage: item.imageUrl,
-      imageDescription: item.description || '' // 添加描述
+      imageDescription: item.description || '', // 添加描述
+      isImageLoading: true // 设置图片为加载中状态
     };
     
     // 如果历史记录中有比例信息，也一并恢复
@@ -185,6 +201,49 @@ Page({
     });
   },
 
+  // 图片加载成功处理
+  onImageLoad: function() {
+    console.log('图片加载成功');
+    this.setData({
+      isImageLoading: false,
+      imageLoadError: false
+    });
+  },
+  
+  // 图片加载失败处理
+  onImageError: function() {
+    console.log('图片加载失败');
+    this.setData({
+      isImageLoading: false,
+      imageLoadError: true
+    });
+  },
+  
+  // 重试加载图片
+  retryLoadImage: function() {
+    console.log('重试加载图片');
+    // 重置状态
+    this.setData({
+      isImageLoading: true,
+      imageLoadError: false
+    });
+    
+    // 在URL后添加随机参数强制重新加载
+    const currentImage = this.data.generatedImage;
+    if (currentImage) {
+      // 分析URL是否已经有参数
+      const separator = currentImage.includes('?') ? '&' : '?';
+      const refreshedUrl = `${currentImage}${separator}_t=${Date.now()}`;
+      
+      // 短暂延迟后重新设置URL
+      setTimeout(() => {
+        this.setData({
+          generatedImage: refreshedUrl
+        });
+      }, 300);
+    }
+  },
+
   // 生成图片
   generateImage: function () {
     // 验证输入
@@ -196,13 +255,36 @@ Page({
       return
     }
 
+    // 记录开始时间，用于确保进度条至少显示3秒
+    const startTime = Date.now();
+
     // 设置生成状态
     this.setData({
       isGenerating: true,
       generatedImage: '',
-      imageDescription: '' // 清空之前的描述
+      imageDescription: '', // 清空之前的描述
+      generationProgress: 0, // 重置进度
+      showProgress: true,  // 显示进度条
+      isImageLoading: false, // 重置图片加载状态
+      imageLoadError: false // 重置图片错误状态
     })
-
+    
+    // 设置一个超时保护，确保进度条最终会关闭
+    const progressTimeoutId = setTimeout(() => {
+      console.log('应用进度条超时保护');
+      if (this.data.showProgress) {
+        this.setData({
+          showProgress: false,
+          isGenerating: false
+        });
+        wx.hideLoading();
+        wx.showToast({
+          title: '生成超时，请重试',
+          icon: 'none'
+        });
+      }
+    }, 30000); // 30秒超时保护
+    
     // 获取选中的风格
     const selectedStyle = this.data.styles.find(item => item.selected)
     
@@ -235,80 +317,162 @@ Page({
       ratio: this.data.params.ratio // 添加比例信息
     }
 
-    // 显示加载提示
+    // 进度回调函数
+    const updateProgress = (progress) => {
+      console.log('更新进度:', progress);
+      
+      // 验证progress是否为有效数值
+      if (typeof progress !== 'number' || isNaN(progress)) {
+        progress = 0;
+      }
+      
+      // 确保progress在0-100范围内
+      progress = Math.max(0, Math.min(100, progress));
+      
+      // 如果已经不在生成状态，直接关闭进度条
+      if (!this.data.isGenerating) {
+        this.setData({ 
+          showProgress: false,
+          generationProgress: 0
+        });
+        return;
+      }
+      
+      // 如果进度到达100%，不立即关闭进度条，等待展示完全
+      if (progress >= 100) {
+        // 在最后UI更新中不自动关闭进度条，而是在生成完成后统一处理
+        console.log('进度已达100%，等待生成完成后统一处理');
+      }
+      
+      this.setData({ generationProgress: progress });
+      
+      // 当进度到达100%时，显示"处理中..."文本
+      const loadingText = progress >= 100 ? '处理中...' : `创作中 ${progress}%`;
+      
+      // 更新加载提示文本
+      wx.showLoading({
+        title: loadingText,
+        mask: true
+      });
+    };
+
+    // 显示初始加载提示
     wx.showLoading({
-      title: '创作中...',
+      title: '创作中 0%',
       mask: true
-    })
+    });
 
     // 调用后端API生成图片
-    api.generateImage(params)
+    api.generateImage(params, updateProgress)
       .then(res => {
-        // 隐藏加载提示
-        wx.hideLoading()
+        // 清除超时保护
+        clearTimeout(progressTimeoutId);
         
-        // 处理成功响应
-        const result = {
-          success: true,
-          imageUrl: res.imageUrl, 
-          description: res.description || '基于您的提示词创作的图像',
-          timestamp: Date.now()
-        }
-
-        // 更新生成图片和描述
-        this.setData({
-          isGenerating: false,
-          generatedImage: result.imageUrl,
-          imageDescription: result.description
-        })
-
-        // 添加到历史记录
-        const history = this.data.history
-        const newRecord = {
-          id: result.timestamp,
-          prompt: this.data.prompt,
-          style: selectedStyle.name,
-          imageUrl: result.imageUrl,
-          description: result.description,
-          timestamp: result.timestamp,
-          timeStr: '刚刚',
-          ratio: this.data.params.ratio // 保存图像比例
-        }
+        // 计算经过的时间
+        const elapsedTime = Date.now() - startTime;
+        const minShowTime = 3000; // 进度条最少显示3秒
         
-        history.unshift(newRecord)
+        // 如果经过的时间少于最小显示时间，则延迟关闭
+        const delayToClose = Math.max(0, minShowTime - elapsedTime);
+        console.log(`经过时间: ${elapsedTime}ms, 延迟关闭: ${delayToClose}ms`);
         
-        // 更新页面数据
-        this.setData({ history })
-        // 保存到本地存储
-        wx.setStorageSync('drawHistory', history)
+        // 在延迟结束前，先将进度设为100%
+        this.setData({ generationProgress: 100 });
         
-        // 显示成功提示
-        wx.showToast({
-          title: '创作成功',
-          icon: 'success'
-        })
-        
-        // 自动滚动到结果区域
+        // 延迟隐藏加载提示和更新UI
         setTimeout(() => {
-          this.scrollToResult()
-        }, 500)
+          // 隐藏加载提示
+          wx.hideLoading();
+          
+          // 处理成功响应
+          const result = {
+            success: true,
+            imageUrl: res.imageUrl, 
+            description: res.description || '基于您的提示词创作的图像',
+            timestamp: Date.now()
+          }
+          
+          console.log('生成成功，关闭进度条');
+          
+          // 更新生成图片和描述，关闭进度显示
+          this.setData({
+            isGenerating: false,
+            generatedImage: result.imageUrl,
+            imageDescription: result.description,
+            showProgress: false,
+            generationProgress: 100,
+            isImageLoading: true // 设置为正在加载图片
+          });
+          
+          // 添加到历史记录
+          const history = this.data.history;
+          const newRecord = {
+            id: result.timestamp,
+            prompt: this.data.prompt,
+            style: selectedStyle.name,
+            imageUrl: result.imageUrl,
+            description: result.description,
+            timestamp: result.timestamp,
+            timeStr: '刚刚',
+            ratio: this.data.params.ratio // 保存图像比例
+          };
+          
+          history.unshift(newRecord);
+          
+          // 更新页面数据
+          this.setData({ history });
+          // 保存到本地存储
+          wx.setStorageSync('drawHistory', history);
+          
+          // 显示成功提示
+          wx.showToast({
+            title: '创作成功',
+            icon: 'success'
+          });
+          
+          // 自动滚动到结果区域
+          setTimeout(() => {
+            this.scrollToResult();
+          }, 500);
+        }, delayToClose);
       })
       .catch(err => {
-        // 隐藏加载提示
-        wx.hideLoading()
+        // 清除超时保护
+        clearTimeout(progressTimeoutId);
         
-        // 设置生成状态为完成
-        this.setData({ isGenerating: false })
+        // 计算经过的时间
+        const elapsedTime = Date.now() - startTime;
+        const minShowTime = 3000; // 进度条最少显示3秒
         
-        // 显示错误提示
-        wx.showToast({
-          title: '创作失败，请重试',
-          icon: 'none'
-        })
+        // 如果经过的时间少于最小显示时间，则延迟关闭
+        const delayToClose = Math.max(0, minShowTime - elapsedTime);
+        console.log(`经过时间: ${elapsedTime}ms, 延迟关闭: ${delayToClose}ms`);
         
-        // 记录错误日志
-        console.error('生成图片失败:', err)
-      })
+        setTimeout(() => {
+          // 隐藏加载提示
+          wx.hideLoading();
+          
+          console.log('生成失败，关闭进度条');
+          
+          // 设置生成状态为完成，隐藏进度条
+          this.setData({ 
+            isGenerating: false,
+            showProgress: false,
+            generationProgress: 0,
+            isImageLoading: false,
+            imageLoadError: false // 由于生成失败，所以不设置为图片错误状态
+          });
+          
+          // 显示错误提示
+          wx.showToast({
+            title: '创作失败，请重试',
+            icon: 'none'
+          });
+          
+          // 记录错误日志
+          console.error('生成图片失败:', err);
+        }, delayToClose);
+      });
   },
   
   // 滚动到结果区域
@@ -373,16 +537,33 @@ Page({
       wx.showToast({
         title: '请先生成图片',
         icon: 'none'
-      })
-      return
+      });
+      return;
+    }
+    
+    // 检查图片是否正在加载或加载失败
+    if (this.data.isImageLoading) {
+      wx.showToast({
+        title: '图片正在加载中，请稍候',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    if (this.data.imageLoadError) {
+      wx.showToast({
+        title: '图片加载失败，请重试',
+        icon: 'none'
+      });
+      return;
     }
 
     wx.showLoading({
       title: '保存中...',
-    })
+    });
 
     // 处理网络图片和本地图片的情况
-    const isNetworkImage = this.data.generatedImage.startsWith('http')
+    const isNetworkImage = this.data.generatedImage.startsWith('http');
     
     if (isNetworkImage) {
       // 网络图片先下载再保存
@@ -390,27 +571,27 @@ Page({
         url: this.data.generatedImage,
         success: (res) => {
           if (res.statusCode === 200) {
-            this.saveImageToAlbum(res.tempFilePath)
+            this.saveImageToAlbum(res.tempFilePath);
           } else {
-            wx.hideLoading()
+            wx.hideLoading();
             wx.showToast({
               title: '下载图片失败',
               icon: 'none'
-            })
+            });
           }
         },
         fail: (err) => {
-          wx.hideLoading()
+          wx.hideLoading();
           wx.showToast({
             title: '下载图片失败',
             icon: 'none'
-          })
-          console.error('下载图片失败:', err)
+          });
+          console.error('下载图片失败:', err);
         }
-      })
+      });
     } else {
       // 本地图片直接保存
-      this.saveImageToAlbum(this.data.generatedImage)
+      this.saveImageToAlbum(this.data.generatedImage);
     }
   },
   

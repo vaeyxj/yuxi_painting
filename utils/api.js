@@ -77,9 +77,9 @@ const showError = (msg) => {
 }
 
 // 调用DeepSeek API生成图片
-const callDeepseekAPI = (params) => {
+const callDeepseekAPI = (params, progressCallback) => {
   // 构建prompt模板
-  const promptTemplate = `你现在是一个AI图片生成机器人，等待我给你一些提示(不需要举例)，你用你的想象力去描述这幅图片，并转换成英文用纯文本的形式填充到下面url的占位符{prompt)中：
+  const promptTemplate = `你现在是一个AI图片生成机器人，等待我给你一些提示(不需要举例)，你用你的想象力去描述这幅图片，并转换成英文用纯文本的形式填充到下面url的占位符{prompt}中：
 ![image](https://image.pollinations.ai/prompt/{prompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux)
 生成后给出中文提示语`;
   
@@ -90,12 +90,26 @@ const callDeepseekAPI = (params) => {
   
   console.log('发送到Deepseek的提示词:', userPrompt);
   
+  // 开始模拟进度更新
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    // 在0-90%范围内缓慢增长
+    if (progress < 90) {
+      // 初始快速，后期缓慢的指数曲线
+      const increment = progress < 30 ? 5 : (progress < 60 ? 3 : 1);
+      progress += increment;
+      if (typeof progressCallback === 'function') {
+        progressCallback(progress);
+      }
+    }
+  }, 300);
+  
   // 构建请求参数
   const requestData = {
     model: "deepseek-chat",
     messages: [
-      { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: `${promptTemplate}\n\n${userPrompt}` }
+      { role: "system", content: "${promptTemplate}" },
+      { role: "user", content: "${userPrompt}" }
     ],
     stream: false
   };
@@ -111,6 +125,11 @@ const callDeepseekAPI = (params) => {
       },
       success: (res) => {
         console.log('Deepseek API原始响应:', res);
+        
+        // 设置进度为95%
+        if (typeof progressCallback === 'function') {
+          progressCallback(95);
+        }
         
         if (res.statusCode === 200 && res.data && res.data.choices && res.data.choices.length > 0) {
           // 成功响应，处理DeepSeek返回的内容
@@ -130,6 +149,17 @@ const callDeepseekAPI = (params) => {
             const description = descriptionMatch ? descriptionMatch[1].trim() : "AI创作的图像";
             console.log('提取的中文描述:', description);
             
+            // 设置进度为100%
+            if (typeof progressCallback === 'function') {
+              progressCallback(100);
+              
+              // 确保在完成时再次调用100%，让UI有时间更新
+              setTimeout(() => {
+                progressCallback(100);
+              }, 200);
+            }
+            
+            clearInterval(progressInterval);
             resolve({
               imageUrl: imageUrl,
               description: description,
@@ -146,6 +176,17 @@ const callDeepseekAPI = (params) => {
               const constructedUrl = `https://image.pollinations.ai/prompt/${englishPrompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux`;
               console.log('构建的URL:', constructedUrl);
               
+              // 设置进度为100%
+              if (typeof progressCallback === 'function') {
+                progressCallback(100);
+                
+                // 确保在完成时再次调用100%，让UI有时间更新
+                setTimeout(() => {
+                  progressCallback(100);
+                }, 200);
+              }
+              
+              clearInterval(progressInterval);
               resolve({
                 imageUrl: constructedUrl,
                 description: "AI根据您的提示创作的图像",
@@ -153,10 +194,21 @@ const callDeepseekAPI = (params) => {
               });
             } else {
               // 完全无法提取，使用原始提示词构建URL
-              const fallbackPrompt = encodeURIComponent(params.prompt);
+              const fallbackPrompt = encodeURIComponent(userPrompt);
               const fallbackUrl = `https://image.pollinations.ai/prompt/${fallbackPrompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux`;
               console.log('使用原始提示词构建URL:', fallbackUrl);
               
+              // 设置进度为100%
+              if (typeof progressCallback === 'function') {
+                progressCallback(100);
+                
+                // 确保在完成时再次调用100%，让UI有时间更新
+                setTimeout(() => {
+                  progressCallback(100);
+                }, 200);
+              }
+              
+              clearInterval(progressInterval);
               resolve({
                 imageUrl: fallbackUrl,
                 description: "根据提示词直接生成的图像",
@@ -167,6 +219,13 @@ const callDeepseekAPI = (params) => {
         } else {
           // 请求失败
           console.error('Deepseek API请求失败:', res);
+          clearInterval(progressInterval);
+          
+          // 确保在失败时也设置进度为100%，以便关闭进度条
+          if (typeof progressCallback === 'function') {
+            progressCallback(100);
+          }
+          
           reject({
             error: `请求失败，状态码: ${res.statusCode}`,
             data: res.data
@@ -175,6 +234,13 @@ const callDeepseekAPI = (params) => {
       },
       fail: (err) => {
         console.error('网络请求失败:', err);
+        clearInterval(progressInterval);
+        
+        // 确保在失败时也设置进度为100%，以便关闭进度条
+        if (typeof progressCallback === 'function') {
+          progressCallback(100);
+        }
+        
         reject({
           error: '网络请求失败',
           details: err
@@ -200,7 +266,7 @@ module.exports = {
   },
   
   // AI绘图相关
-  generateImage: (params) => {
+  generateImage: (params, progressCallback) => {
     // 判断是否使用模拟数据（没有实际后端服务或明确设置了使用模拟数据）
     const useMockData = !app.globalData.apiBaseUrl || app.globalData.useMockData;
     
@@ -209,8 +275,33 @@ module.exports = {
     if (useMockData) {
       console.log('使用模拟数据生成图片');
       return new Promise((resolve) => {
-        // 模拟网络延迟
+        // 模拟网络延迟和进度更新
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+          if (progress < 95) {  // 只更新到95%，最后5%留给结果处理
+            // 不同阶段速度不同
+            const increment = progress < 30 ? 5 : (progress < 60 ? 3 : (progress < 80 ? 2 : 1));
+            progress += increment;
+            if (typeof progressCallback === 'function') {
+              progressCallback(progress);
+            }
+          }
+          
+          // 当进度达到95时，停止自动更新，等待最终处理
+          if (progress >= 95) {
+            clearInterval(progressInterval);
+          }
+        }, 200);
+        
+        // 模拟API调用延迟
         setTimeout(() => {
+          // 解决最后5%的进度和显示最终结果
+          if (typeof progressCallback === 'function') {
+            progressCallback(100);
+          }
+          
+          clearInterval(progressInterval);
+          
           // 根据不同风格返回不同的模拟图片
           let imageUrl = '/static/images/sample_generated.jpg';
           
@@ -252,14 +343,14 @@ module.exports = {
             prompt: params.prompt,
             style: params.style,
             description: "这是一个AI生成的图像，根据您的提示生成"
-          })
-        }, 2000) // 模拟2秒网络延迟
-      })
+          });
+        }, 3000) // 模拟3秒网络延迟
+      });
     }
     
     console.log('调用真实的Deepseek API');
     // 生产环境使用 Deepseek API
-    return callDeepseekAPI(params)
+    return callDeepseekAPI(params, progressCallback)
       .then(res => {
         console.log('Deepseek API响应成功:', res);
         return {
@@ -268,7 +359,7 @@ module.exports = {
           height: params.height,
           prompt: params.prompt,
           style: params.style,
-          description: res.description
+          description: "AI根据您的提示创作的图像:" + res.description
         };
       })
       .catch(err => {
@@ -277,8 +368,19 @@ module.exports = {
         showError('AI接口调用失败，请稍后重试');
         
         // 使用备选方案：直接使用pollinations.ai生成
-        const fallbackPrompt = encodeURIComponent(params.prompt);
+        // 将所有参数转换为字符串并拼接
+        const userPrompt = Object.entries(params)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+
+        console.log('发送到pollinations.ai的提示词:', userPrompt);
+        const fallbackPrompt = encodeURIComponent(userPrompt);
         const fallbackUrl = `https://image.pollinations.ai/prompt/${fallbackPrompt}?width=1024&height=1024&enhance=true&private=true&nologo=true&safe=true&model=flux`;
+        
+        // 确保进度达到100%
+        if (typeof progressCallback === 'function') {
+          progressCallback(100);
+        }
         
         return {
           imageUrl: fallbackUrl,

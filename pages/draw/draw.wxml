@@ -102,11 +102,36 @@
       </button>
     </view>
     
+    <!-- 生成进度条 -->
+    <view class="progress-section" wx:if="{{showProgress && isGenerating}}">
+      <view class="progress-bar-container">
+        <view class="progress-bar" style="width: {{generationProgress}}%;"></view>
+      </view>
+      <view class="progress-text">{{generationProgress}}% 已完成</view>
+    </view>
+    
     <!-- 结果展示 -->
     <view class="result-section" wx:if="{{generatedImage}}">
       <view class="section-title">创作结果</view>
       <view class="image-container">
-        <image class="generated-image" src="{{generatedImage}}" mode="widthFix" show-menu-by-longpress></image>
+        <view class="image-wrapper">
+          <!-- 添加图片加载状态控制 -->
+          <image class="generated-image" 
+                 src="{{generatedImage}}" 
+                 mode="widthFix" 
+                 show-menu-by-longpress
+                 bindload="onImageLoad"
+                 binderror="onImageError"></image>
+          
+          <!-- 图片加载中或加载失败时显示提示 -->
+          <view class="image-loading-overlay" wx:if="{{isImageLoading || imageLoadError}}">
+            <view class="loading-content">
+              <view class="loading-icon" wx:if="{{isImageLoading}}"></view>
+              <text>{{isImageLoading ? '正在加载图片...' : '图片加载失败，请重试'}}</text>
+              <button class="retry-btn" wx:if="{{imageLoadError}}" bindtap="retryLoadImage">重新加载</button>
+            </view>
+          </view>
+        </view>
         
         <!-- 添加AI生成的图片描述 -->
         <view class="image-description" wx:if="{{imageDescription && imageDescription.length > 0}}">
