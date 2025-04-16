@@ -102,12 +102,32 @@ Page({
     })
   },
   
+  // 跳转到AI绘画页面的统一方法
+  goToDrawPage() {
+    console.log('跳转到AI绘画页面');
+    // 标记来源
+    getApp().globalData.drawPageSource = 'homepage';
+    // 使用switchTab跳转到tabBar页面
+    wx.switchTab({
+      url: '/pages/draw/draw'
+    });
+  },
+  
   // 功能导航
   navigateToFeature(e) {
-    const { path } = e.currentTarget.dataset
-    wx.navigateTo({
-      url: path
-    })
+    const { path, id } = e.currentTarget.dataset
+    
+    console.log('navigateToFeature', path, id); // 添加日志，调试用
+    
+    // 针对AI绘画特殊处理
+    if (id === 'draw') {
+      this.goToDrawPage();
+    } else {
+      // 其他页面使用常规导航
+      wx.navigateTo({
+        url: path
+      })
+    }
   },
   
   // 获取轮播图数据
@@ -184,34 +204,38 @@ Page({
   // 轮播图点击
   onBannerTap(e) {
     const { url } = e.currentTarget.dataset
-    wx.navigateTo({
-      url
-    })
+    
+    // 如果是跳转到AI绘画页面，使用特殊处理
+    if (url.includes('/pages/draw/draw')) {
+      this.goToDrawPage();
+    } else {
+      wx.navigateTo({
+        url
+      })
+    }
   },
   
   // 底部导航栏跳转
   navigateToTab(e) {
     const { page } = e.currentTarget.dataset
     
-    // 根据选项卡切换页面
+    // 注意：这里应该使用switchTab而不是navigateTo，因为这些都是tabBar中的页面
     switch(page) {
       case 'draw':
-        wx.navigateTo({
-          url: '/pages/draw/draw'
-        })
+        this.goToDrawPage();
         break
       case 'gallery':
-        wx.navigateTo({
+        wx.switchTab({
           url: '/pages/gallery/gallery'
         })
         break
       case 'digital-human':
-        wx.navigateTo({
+        wx.switchTab({
           url: '/pages/digital-human/digital-human'
         })
         break
       case 'profile':
-        wx.navigateTo({
+        wx.switchTab({
           url: '/pages/profile/profile'
         })
         break
@@ -226,9 +250,7 @@ Page({
   
   // 点击英雄区域
   onHeroTap() {
-    wx.navigateTo({
-      url: '/pages/draw/draw'
-    })
+    this.goToDrawPage();
   },
   
   // 会员卡点击处理
@@ -240,8 +262,6 @@ Page({
   
   // CTA按钮点击
   onCtaTap() {
-    wx.navigateTo({
-      url: '/pages/draw/draw'
-    })
+    this.goToDrawPage();
   }
 }) 

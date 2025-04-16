@@ -40,6 +40,36 @@ Page({
   onShow: function () {
     // 页面显示时刷新历史记录
     this.getHistory()
+    
+    // 处理从首页跳转的情况
+    const app = getApp();
+    console.log('draw page onShow, drawPageSource:', app.globalData.drawPageSource);
+    
+    if (app.globalData && app.globalData.drawPageSource === 'homepage') {
+      // 清除标记，避免重复处理
+      app.globalData.drawPageSource = '';
+      
+      // 可以设置默认的创作提示或者选择随机的风格
+      const randomStyleIndex = Math.floor(Math.random() * this.data.styles.length);
+      const styles = this.data.styles.map((style, idx) => {
+        return {
+          ...style,
+          selected: idx === randomStyleIndex
+        }
+      });
+      
+      this.setData({ 
+        styles,
+        prompt: '一幅美丽的画作，展现自然与科技的和谐' // 设置一个默认的创意提示词
+      });
+      
+      // 显示欢迎提示
+      // wx.showToast({
+      //   title: '欢迎来到AI绘画创作',
+      //   icon: 'none',
+      //   duration: 2000
+      // });
+    }
   },
 
   // 输入提示词

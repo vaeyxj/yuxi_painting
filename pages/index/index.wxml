@@ -36,7 +36,7 @@
 
   <!-- 功能卡片区 -->
   <view class="features-section">
-    <view class="feature-card" wx:for="{{features}}" wx:key="id" bindtap="navigateToFeature" data-path="{{item.path}}">
+    <view class="feature-card" wx:for="{{features}}" wx:key="id" bindtap="{{item.id === 'draw' ? 'goToDrawPage' : 'navigateToFeature'}}" data-path="{{item.path}}" data-id="{{item.id}}">
       <view class="feature-icon-container">
         <image class="feature-icon" src="{{item.icon}}" mode="aspectFit"></image>
       </view>
