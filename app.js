@@ -49,6 +49,7 @@ App({
     apiBaseUrl: 'https://api.yuxi-painting.com', // 后端API地址，需要替换为实际地址
     imageBaseUrl: 'https://images.yuxi-painting.com', // 图片服务器地址，需要替换为实际地址
     drawPageSource: '', // 记录AI绘画页面的来源
-    lastPage: '' // 记录上一次访问的页面路径
+    lastPage: '', // 记录上一次访问的页面路径
+    useMockData: true // 是否使用模拟数据，开发时设为true，上线时设为false
   }
 }) 

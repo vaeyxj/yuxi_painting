@@ -89,6 +89,52 @@ module.exports = {
   
   // AI绘图相关
   generateImage: (params) => {
+    // 判断是否使用模拟数据（没有实际后端服务或明确设置了使用模拟数据）
+    const useMockData = !app.globalData.apiBaseUrl || app.globalData.useMockData;
+    
+    if (useMockData) {
+      return new Promise((resolve) => {
+        // 模拟网络延迟
+        setTimeout(() => {
+          // 根据不同风格返回不同的模拟图片
+          let imageUrl = '/static/images/sample_generated.jpg';
+          
+          // 如果有风格参数，返回对应风格的图片
+          if (params.style) {
+            switch(params.style) {
+              case 'realistic':
+                imageUrl = '/static/images/samples/realistic.jpg';
+                break;
+              case 'cartoon':
+                imageUrl = '/static/images/samples/cartoon.jpg';
+                break;
+              case 'ink':
+                imageUrl = '/static/images/samples/ink.jpg';
+                break;
+              case 'oil':
+                imageUrl = '/static/images/samples/oil.jpg';
+                break;
+              case 'anime':
+                imageUrl = '/static/images/samples/anime.jpg';
+                break;
+              default:
+                imageUrl = '/static/images/sample_generated.jpg';
+            }
+          }
+          
+          // 返回模拟数据
+          resolve({
+            imageUrl: imageUrl,
+            width: params.width,
+            height: params.height,
+            prompt: params.prompt,
+            style: params.style
+          })
+        }, 2000) // 模拟2秒网络延迟
+      })
+    }
+    
+    // 生产环境使用真实API
     return request('/draw/generate', 'POST', params)
   },
   
