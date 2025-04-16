@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/user/user",
+    "pages/draw/draw",
+    "pages/anime/anime",
+    "pages/face-swap/face-swap",
+    "pages/avatar/avatar",
+    "pages/gallery/gallery",
+    "pages/digital-human/digital-human",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTitleText": "玉玺AI绘画",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#ffffff",
+    "backgroundColor": "#0d0d0d",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/images/tabbar/home.png",
+        "selectedIconPath": "static/images/tabbar/home_selected.png"
+      },
+      {
+        "pagePath": "pages/draw/draw",
+        "text": "AI绘画",
+        "iconPath": "static/images/tabbar/draw.png",
+        "selectedIconPath": "static/images/tabbar/draw_selected.png"
+      },
+      {
+        "pagePath": "pages/gallery/gallery",
+        "text": "作品广场",
+        "iconPath": "static/images/tabbar/gallery.png",
+        "selectedIconPath": "static/images/tabbar/gallery_selected.png"
+      },
+      {
+        "pagePath": "pages/digital-human/digital-human",
+        "text": "AI数字人",
+        "iconPath": "static/images/tabbar/digital_human.png",
+        "selectedIconPath": "static/images/tabbar/digital_human_selected.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/images/tabbar/user.png",
+        "selectedIconPath": "static/images/tabbar/user_selected.png"
+      }
+    ]
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json"
+}

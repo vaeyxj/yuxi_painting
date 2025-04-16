@@ -1,0 +1,31 @@
+<!--pages/gallery/gallery.wxml-->
+<view class="container">
+  <view class="page-header">
+    <view class="page-title">作品广场</view>
+  </view>
+  
+  <view class="works-section">
+    <view class="filter-tabs">
+      <view class="tab active">最新作品</view>
+      <view class="tab">热门作品</view>
+      <view class="tab">关注作品</view>
+    </view>
+    
+    <view class="works-grid">
+      <!-- 作品卡片，后续通过数据动态渲染 -->
+      <view class="work-card" wx:for="{{works}}" wx:key="id" bindtap="onWorkTap" data-id="{{item.id}}">
+        <image class="work-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <view class="work-info">
+          <view class="work-title">{{item.title}}</view>
+          <view class="work-meta">
+            <view class="work-author">{{item.author}}</view>
+            <view class="work-likes">
+              <image class="like-icon" src="/static/images/icons/like.png"></image>
+              <text>{{item.likes}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

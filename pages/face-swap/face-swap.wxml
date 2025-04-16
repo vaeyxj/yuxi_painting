@@ -1,0 +1,10 @@
+<!--pages/face-swap/face-swap.wxml-->
+<view class="container">
+  <view class="page-header">
+    <view class="page-title">AI换脸</view>
+  </view>
+  
+  <view class="content">
+    <view class="placeholder-text">AI换脸功能开发中</view>
+  </view>
+</view> 

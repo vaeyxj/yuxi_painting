@@ -1,0 +1,126 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 顶部标题 -->
+  <view class="page-header">
+    <view class="page-title">AI生成绘画</view>
+    <view class="header-options">...</view>
+  </view>
+
+  <!-- 英雄区域 - 赛博风格网格背景 -->
+  <view class="hero-section" bindtap="onHeroTap">
+    <view class="cyber-grid"></view>
+    
+    <view class="hero-content">
+      <!-- 对话框 -->
+      <view class="speech-bubble">Hi~</view>
+      
+      <!-- 中央AI机器人元素 -->
+      <view class="central-element">
+        <image class="ai-robot" src="/static/images/hero/ai-robot.png" mode="aspectFit"></image>
+      </view>
+      
+      <!-- 彩色颜料飞溅效果 -->
+      <view class="color-splash">
+        <!-- 图标和交互元素 -->
+        <image class="interaction-icon chat" src="/static/images/icons/chat.png" mode="aspectFit"></image>
+        <image class="interaction-icon video" src="/static/images/icons/video.png" mode="aspectFit"></image>
+        <image class="interaction-icon cloud" src="/static/images/icons/cloud.png" mode="aspectFit"></image>
+        
+      </view>
+    </view>
+  </view>
+
+  <!-- 会员卡片 -->
+  <view class="membership-card" bindtap="onMembershipTap">
+    <view class="membership-info">
+      <view class="membership-title">{{membershipInfo.title}}</view>
+      <view class="membership-desc">{{membershipInfo.desc}}</view>
+    </view>
+    <button class="membership-btn">立即开通</button>
+  </view>
+
+  <!-- 功能卡片区 -->
+  <view class="features-section">
+    <!-- AI绘画功能卡片 -->
+    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/draw/draw">
+      <view class="feature-icon-container">
+        <image class="feature-icon" src="/static/images/features/palette.png" mode="aspectFit"></image>
+      </view>
+      <view class="feature-info">
+        <view class="feature-name">AI绘画</view>
+        <view class="feature-desc">让你也成为天才画家</view>
+      </view>
+      <!-- 卡片右侧图标 -->
+      <image class="feature-right-image" src="/static/images/features/draw-right.png" mode="aspectFit"></image>
+    </view>
+
+    <!-- AI转动漫功能卡片 -->
+    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/anime/anime">
+      <view class="feature-icon-container">
+        <image class="feature-icon" src="/static/images/features/anime-avatar.png" mode="aspectFit"></image>
+      </view>
+      <view class="feature-info">
+        <view class="feature-name">AI转动漫</view>
+        <view class="feature-desc">让自己成为漫画的主角</view>
+      </view>
+      <!-- 卡片右侧图标 -->
+      <image class="feature-right-image" src="/static/images/features/anime-right.png" mode="aspectFit"></image>
+    </view>
+
+    <!-- AI换脸功能卡片 -->
+    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/face-swap/face-swap">
+      <view class="feature-icon-container">
+        <image class="feature-icon" src="/static/images/features/face-swap.png" mode="aspectFit"></image>
+      </view>
+      <view class="feature-info">
+        <view class="feature-name">AI换脸</view>
+        <view class="feature-desc">让你轻松掌握易容术</view>
+      </view>
+      <!-- 卡片右侧图标 -->
+      <image class="feature-right-image" src="/static/images/features/face-right.png" mode="aspectFit"></image>
+    </view>
+
+    <!-- AI头像生成器功能卡片 -->
+    <view class="feature-card" bindtap="navigateToFeature" data-path="/pages/avatar/avatar">
+      <view class="feature-icon-container">
+        <image class="feature-icon" src="/static/images/features/avatar-maker.png" mode="aspectFit"></image>
+      </view>
+      <view class="feature-info">
+        <view class="feature-name">AI头像生成器</view>
+        <view class="feature-desc">让你DIY制作 AI萌拍头像</view>
+      </view>
+      <!-- 卡片右侧图标 -->
+      <image class="feature-right-image" src="/static/images/features/avatar-right.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <!-- 精选作品区域 -->
+  <view class="featured-works-section">
+    <view class="section-header">
+      <view class="section-title">精选作品</view>
+      <view class="section-more" bindtap="navigateToFeature" data-path="/pages/gallery/gallery">更多</view>
+    </view>
+    
+    <view class="works-grid">
+      <view class="work-card" wx:for="{{featuredWorks}}" wx:key="id" bindtap="onWorkTap" data-id="{{item.id}}">
+        <image class="work-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+        <view class="work-info">
+          <view class="work-title">{{item.title}}</view>
+          <view class="work-meta">
+            <view class="work-author">{{item.author}}</view>
+            <view class="work-likes">
+              <image class="like-icon" src="/static/images/icons/like.png"></image>
+              <text>{{item.likes}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 创作号召区域 -->
+  <view class="cta-section">
+    <view class="cta-text">准备好开始你的创作了吗？</view>
+    <view class="cta-btn" bindtap="onCtaTap">立即创作</view>
+  </view>
+</view> 

@@ -1,0 +1,10 @@
+<!--pages/draw/draw.wxml-->
+<view class="container">
+  <view class="page-header">
+    <view class="page-title">AI绘画</view>
+  </view>
+  
+  <view class="content">
+    <view class="placeholder-text">AI绘画功能开发中</view>
+  </view>
+</view> 

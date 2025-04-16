@@ -1,0 +1,97 @@
+<!--pages/user/user.wxml-->
+<view class="container">
+  <!-- 未登录状态 -->
+  <view class="user-card" wx:if="{{!hasUserInfo}}">
+    <view class="avatar-placeholder"></view>
+    <view class="login-btn-container">
+      <button wx:if="{{canIUseGetUserProfile}}" class="login-btn" bindtap="getUserProfile">微信一键登录</button>
+      <button wx:else open-type="getUserInfo" class="login-btn" bindgetuserinfo="getUserInfo">微信一键登录</button>
+    </view>
+    <view class="login-tips">登录后可同步数据，管理作品</view>
+  </view>
+
+  <!-- 已登录状态 -->
+  <view class="user-card" wx:else>
+    <view class="user-info">
+      <image class="user-avatar" src="{{userInfo.avatarUrl}}"></image>
+      <view class="user-detail">
+        <view class="user-name">{{userInfo.nickName}}</view>
+        <view class="user-member" wx:if="{{isMember}}">
+          <image class="member-icon" src="/static/images/icons/vip.png"></image>
+          <text class="member-text">会员 · {{memberExpireTime}}到期</text>
+        </view>
+        <view class="user-member" wx:else bindtap="goToMembership">
+          <text class="normal-text">开通会员解锁更多特权</text>
+          <text class="buy-text">立即开通</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="user-stats">
+      <view class="stat-item">
+        <view class="stat-value">{{workCount}}</view>
+        <view class="stat-label">作品</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-value">{{likeCount}}</view>
+        <view class="stat-label">获赞</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-value">{{usage.totalCount}}</view>
+        <view class="stat-label">创作</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日使用情况 -->
+  <view class="usage-card" wx:if="{{hasUserInfo}}">
+    <view class="usage-title">今日使用情况</view>
+    <view class="usage-progress">
+      <view class="progress-bar">
+        <view class="progress-inner" style="width: {{usage.totalCount / usage.dailyLimit * 100}}%"></view>
+      </view>
+      <view class="progress-text">{{usage.totalCount}}/{{usage.dailyLimit}}</view>
+    </view>
+    <view class="usage-detail">
+      <view class="usage-item">
+        <text class="usage-label">AI绘图</text>
+        <text class="usage-value">{{usage.drawCount}}</text>
+      </view>
+      <view class="usage-item">
+        <text class="usage-label">AI换装</text>
+        <text class="usage-value">{{usage.dressCount}}</text>
+      </view>
+      <view class="usage-item">
+        <text class="usage-label">AI扩图</text>
+        <text class="usage-value">{{usage.expandCount}}</text>
+      </view>
+      <view class="usage-item">
+        <text class="usage-label">AI修复</text>
+        <text class="usage-value">{{usage.restoreCount}}</text>
+      </view>
+      <view class="usage-item">
+        <text class="usage-label">AI头像</text>
+        <text class="usage-value">{{usage.avatarCount}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-list">
+    <view class="menu-item" wx:for="{{menuList}}" wx:key="id" bindtap="navigateToMenu" data-path="{{item.path}}">
+      <view class="menu-left">
+        <image class="menu-icon" src="{{item.icon}}"></image>
+        <text class="menu-name">{{item.name}}</text>
+      </view>
+      <image class="menu-arrow" src="/static/images/icons/arrow-right.png"></image>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-btn" wx:if="{{hasUserInfo}}" bindtap="logout">退出登录</view>
+
+  <!-- 版本信息 -->
+  <view class="version-info">玉玺AI绘画 v1.0.0</view>
+</view> 

@@ -1,0 +1,35 @@
+<!--pages/profile/profile.wxml-->
+<view class="container">
+  <view class="page-header">
+    <view class="page-title">个人中心</view>
+  </view>
+  
+  <view class="user-info-section">
+    <view class="avatar-container">
+      <image class="avatar" src="/static/images/avatar/default.png" wx:if="{{!hasUserInfo}}"></image>
+      <image class="avatar" src="{{userInfo.avatarUrl}}" wx:else></image>
+    </view>
+    <view class="user-name">{{hasUserInfo ? userInfo.nickName : '未登录'}}</view>
+    <button class="login-btn" bindtap="getUserProfile" wx:if="{{!hasUserInfo}}">点击登录</button>
+  </view>
+  
+  <view class="menu-list">
+    <view class="menu-item" bindtap="navigateToMyWorks">
+      <image class="menu-icon" src="/static/images/icons/works.png"></image>
+      <view class="menu-text">我的作品</view>
+      <image class="arrow-icon" src="/static/images/icons/arrow-right.png"></image>
+    </view>
+    
+    <view class="menu-item" bindtap="navigateToMembership">
+      <image class="menu-icon" src="/static/images/icons/vip.png"></image>
+      <view class="menu-text">会员中心</view>
+      <image class="arrow-icon" src="/static/images/icons/arrow-right.png"></image>
+    </view>
+    
+    <view class="menu-item" bindtap="navigateToSettings">
+      <image class="menu-icon" src="/static/images/icons/settings.png"></image>
+      <view class="menu-text">设置</view>
+      <image class="arrow-icon" src="/static/images/icons/arrow-right.png"></image>
+    </view>
+  </view>
+</view> 

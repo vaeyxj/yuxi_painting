@@ -1,0 +1,38 @@
+/* pages/face-swap/face-swap.wxss */
+.container {
+  padding: 0;
+  background-color: #000;
+  min-height: 100vh;
+  color: #fff;
+  position: relative;
+}
+
+/* 页面标题 */
+.page-header {
+  padding: 20rpx 30rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* 内容区域 */
+.content {
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+}
+
+.placeholder-text {
+  font-size: 32rpx;
+  color: #999;
+  text-align: center;
+} 

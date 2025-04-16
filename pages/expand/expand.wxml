@@ -1,0 +1,7 @@
+<!--pages/expand/expand.wxml-->
+<view class="container">
+  <view class="title">AI扩图</view>
+  <view class="content">
+    <view class="tip">功能开发中，敬请期待...</view>
+  </view>
+</view> 

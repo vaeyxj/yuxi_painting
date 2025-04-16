@@ -1,0 +1,257 @@
+/* pages/draw/draw.wxss */
+.container {
+  padding: 0;
+  background-color: #000;
+  min-height: 100vh;
+  color: #fff;
+  position: relative;
+}
+
+/* 页面标题 */
+.page-header {
+  padding: 20rpx 30rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* 内容区域 */
+.content {
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+}
+
+.placeholder-text {
+  font-size: 32rpx;
+  color: #999;
+  text-align: center;
+}
+
+/* 输入区域 */
+.input-section {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+
+.prompt-container {
+  position: relative;
+  width: 100%;
+}
+
+.prompt-input {
+  width: 100%;
+  height: 200rpx;
+  padding: 20rpx;
+  background-color: #fff;
+  border-radius: 10rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.prompt-counter {
+  position: absolute;
+  bottom: 10rpx;
+  right: 20rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 风格选择 */
+.style-section {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+
+.style-list {
+  width: 100%;
+  white-space: nowrap;
+  margin-top: 20rpx;
+}
+
+.style-item {
+  display: inline-block;
+  padding: 15rpx 30rpx;
+  margin-right: 20rpx;
+  background-color: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.style-item.selected {
+  background-color: #DC143C;
+  color: #fff;
+}
+
+/* 参数设置 */
+.params-section {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-sizing: border-box;
+}
+
+.param-item {
+  margin-bottom: 20rpx;
+}
+
+.param-name {
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.param-slider {
+  width: 100%;
+}
+
+/* 生成按钮 */
+.generate-btn {
+  margin: 40rpx 0;
+}
+
+.generating {
+  background-color: #999 !important;
+}
+
+/* 结果展示 */
+.result-section {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+
+.image-container {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.generated-image {
+  width: 100%;
+  border-radius: 8rpx;
+}
+
+.image-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 30rpx 0 10rpx;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.action-icon {
+  width: 50rpx;
+  height: 50rpx;
+  margin-bottom: 10rpx;
+}
+
+.action-item text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 历史记录 */
+.history-section {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arrow-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.history-list {
+  margin-top: 20rpx;
+}
+
+.history-item {
+  display: flex;
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.history-image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+}
+
+.history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.history-prompt {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 36rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.history-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-style {
+  font-size: 24rpx;
+  color: #DC143C;
+  background-color: rgba(220, 20, 60, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+}
+
+.history-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.clear-history {
+  text-align: center;
+  padding: 20rpx 0;
+  color: #999;
+  font-size: 26rpx;
+  text-decoration: underline;
+} 

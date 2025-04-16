@@ -1,0 +1,7 @@
+{
+  "desc": "玉玺AI绘画小程序的索引规则",
+  "rules": [{
+    "action": "allow",
+    "page": "*"
+  }]
+} 

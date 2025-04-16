@@ -1,0 +1,10 @@
+<!--pages/avatar/avatar.wxml-->
+<view class="container">
+  <view class="page-header">
+    <view class="page-title">AI头像生成器</view>
+  </view>
+  
+  <view class="content">
+    <view class="placeholder-text">AI头像生成功能开发中</view>
+  </view>
+</view> 
