@@ -1,208 +1,449 @@
 /* pages/draw/draw.wxss */
 .container {
   padding: 0;
-  background-color: #000;
+  background-color: #080010;
   min-height: 100vh;
   color: #fff;
   position: relative;
 }
 
+/* 页面背景渐变效果 */
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 25% 10%, rgba(255, 90, 200, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 75% 60%, rgba(120, 90, 255, 0.03) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
 /* 页面标题 */
 .page-header {
-  padding: 20rpx 30rpx;
+  padding: 20rpx;
   display: flex;
   justify-content: center;
   align-items: center;
+  border-bottom: 1px solid rgba(255, 90, 200, 0.1);
+  margin-bottom: 15rpx;
 }
 
 .page-title {
-  font-size: 36rpx;
+  font-size: 34rpx;
   font-weight: bold;
   color: #fff;
+  position: relative;
 }
 
-/* 内容区域 */
-.content {
-  padding: 30rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 70vh;
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50rpx;
+  height: 3rpx;
+  background: linear-gradient(to right, rgba(255, 90, 200, 0.7), rgba(120, 90, 255, 0.7));
 }
 
-.placeholder-text {
-  font-size: 32rpx;
-  color: #999;
-  text-align: center;
+/* 主要内容区域 */
+.main-content {
+  padding: 0 25rpx 40rpx;
+  max-width: 92%;
+  margin: 0 auto;
+}
+
+/* 小节标题样式 */
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12rpx;
+  position: relative;
+  display: inline-block;
+}
+
+/* 小节副标题 */
+.section-subtitle {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 15rpx 0 10rpx 0;
 }
 
 /* 输入区域 */
 .input-section {
-  width: 100%;
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
 }
 
 .prompt-container {
   position: relative;
   width: 100%;
+  margin-bottom: 8rpx;
 }
 
 .prompt-input {
   width: 100%;
-  height: 200rpx;
-  padding: 20rpx;
-  background-color: #fff;
-  border-radius: 10rpx;
+  min-height: 150rpx;
+  padding: 15rpx;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
   box-sizing: border-box;
-  font-size: 28rpx;
-  color: #333;
+  font-size: 26rpx;
+  color: #fff;
+  border: 1px solid rgba(255, 90, 200, 0.2);
 }
 
 .prompt-counter {
   position: absolute;
-  bottom: 10rpx;
-  right: 20rpx;
-  font-size: 24rpx;
-  color: #999;
+  bottom: 8rpx;
+  right: 15rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 图像比例选择 */
+.ratio-section {
+  margin-top: 15rpx;
+}
+
+.ratio-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5rpx -5rpx;
+}
+
+.ratio-item {
+  width: 110rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10rpx 10rpx 0;
+  padding: 10rpx;
+  border-radius: 8rpx;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.ratio-item.selected {
+  background: linear-gradient(to right, rgba(255, 90, 200, 0.3), rgba(120, 90, 255, 0.3));
+  border-color: rgba(255, 90, 200, 0.5);
+  box-shadow: 0 2rpx 8rpx rgba(255, 90, 200, 0.2);
+}
+
+.ratio-preview {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4rpx;
+  margin-bottom: 5rpx;
+}
+
+.ratio-item text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 比例预览形状 */
+.square {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.rectangle-4-3 {
+  width: 60rpx;
+  height: 45rpx;
+}
+
+.rectangle-3-4 {
+  width: 45rpx;
+  height: 60rpx;
+}
+
+.widescreen {
+  width: 64rpx;
+  height: 36rpx;
+}
+
+.portrait {
+  width: 36rpx;
+  height: 64rpx;
+}
+
+/* 风格和参数的并排布局 */
+.settings-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20rpx;
 }
 
 /* 风格选择 */
 .style-section {
   width: 100%;
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
 }
 
 .style-list {
   width: 100%;
   white-space: nowrap;
-  margin-top: 20rpx;
+  margin-top: 8rpx;
+  padding: 8rpx 0;
 }
 
 .style-item {
   display: inline-block;
-  padding: 15rpx 30rpx;
-  margin-right: 20rpx;
-  background-color: #fff;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-  color: #666;
+  padding: 10rpx 22rpx;
+  margin-right: 15rpx;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 25rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 90, 200, 0.2);
 }
 
 .style-item.selected {
-  background-color: #DC143C;
+  background: linear-gradient(to right, rgba(255, 90, 200, 0.7), rgba(120, 90, 255, 0.7));
   color: #fff;
+  box-shadow: 0 3rpx 10rpx rgba(255, 90, 200, 0.3);
+  border: 1px solid transparent;
 }
 
 /* 参数设置 */
 .params-section {
-  width: 100%;
-  background-color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx;
-  margin-bottom: 30rpx;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12rpx;
+  padding: 15rpx;
+  margin-bottom: 25rpx;
   box-sizing: border-box;
+  border: 1px solid rgba(255, 90, 200, 0.1);
 }
 
 .param-item {
   margin-bottom: 20rpx;
 }
 
+.param-item:last-child {
+  margin-bottom: 0;
+}
+
+.param-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
 .param-name {
   font-size: 26rpx;
-  color: #333;
-  margin-bottom: 10rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.param-value {
+  font-size: 24rpx;
+  color: rgba(255, 90, 200, 0.9);
+  background-color: rgba(255, 90, 200, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 15rpx;
+}
+
+/* 滑动条渐变效果 */
+.slider-container {
+  position: relative;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  margin: 12rpx 0;
+}
+
+.slider-bg {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4rpx;
+  width: 100%;
+  border-radius: 4rpx;
+  z-index: 1;
+}
+
+.creativity-bg {
+  background: linear-gradient(to right, rgba(255, 90, 200, 0.3), rgba(255, 90, 200, 1));
+}
+
+.quality-bg {
+  background: linear-gradient(to right, rgba(120, 90, 255, 0.3), rgba(120, 90, 255, 1));
 }
 
 .param-slider {
   width: 100%;
+  margin: 0;
+  z-index: 2;
+}
+
+.param-desc {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
 }
 
 /* 生成按钮 */
+.btn-section {
+  margin: 25rpx 0;
+  display: flex;
+  justify-content: center;
+}
+
 .generate-btn {
-  margin: 40rpx 0;
+  width: 70%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: bold;
+  border-radius: 40rpx;
+  background: linear-gradient(90deg, rgba(255, 90, 200, 0.8), rgba(120, 90, 255, 0.8));
+  border: none;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4rpx 15rpx rgba(255, 90, 200, 0.4);
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.generate-btn::after {
+  border: none;
+}
+
+.generate-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(255, 90, 200, 0.3);
 }
 
 .generating {
-  background-color: #999 !important;
+  background: linear-gradient(90deg, rgba(100, 100, 100, 0.8), rgba(150, 150, 150, 0.8)) !important;
+  box-shadow: 0 4rpx 12rpx rgba(150, 150, 150, 0.3) !important;
+}
+
+.btn-content {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 加载动画 */
+.loading-icon {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 10rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 结果展示 */
 .result-section {
-  width: 100%;
-  margin-bottom: 30rpx;
+  margin-bottom: 25rpx;
 }
 
 .image-container {
-  width: 100%;
-  background-color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12rpx;
+  padding: 15rpx;
   box-sizing: border-box;
+  border: 1px solid rgba(255, 90, 200, 0.1);
+  overflow: hidden;
 }
 
 .generated-image {
   width: 100%;
   border-radius: 8rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
 }
 
 .image-actions {
   display: flex;
   justify-content: space-around;
-  padding: 30rpx 0 10rpx;
+  padding: 20rpx 0 5rpx;
 }
 
 .action-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 8rpx 0;
 }
 
 .action-icon {
-  width: 50rpx;
-  height: 50rpx;
-  margin-bottom: 10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  margin-bottom: 8rpx;
 }
 
 .action-item text {
-  font-size: 24rpx;
-  color: #666;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* 历史记录 */
 .history-section {
-  width: 100%;
-  margin-bottom: 30rpx;
+  margin-bottom: 25rpx;
 }
 
 .history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 12rpx;
+  border-bottom: 1px solid rgba(255, 90, 200, 0.1);
+  margin-bottom: 15rpx;
 }
 
 .arrow-icon {
-  width: 40rpx;
-  height: 40rpx;
+  width: 30rpx;
+  height: 30rpx;
 }
 
 .history-list {
-  margin-top: 20rpx;
+  margin-top: 15rpx;
 }
 
 .history-item {
   display: flex;
-  background-color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12rpx;
+  padding: 15rpx;
+  margin-bottom: 15rpx;
+  border: 1px solid rgba(255, 90, 200, 0.1);
+  transition: all 0.3s ease;
+}
+
+.history-item:active {
+  transform: scale(0.98);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .history-image {
-  width: 160rpx;
-  height: 160rpx;
+  width: 140rpx;
+  height: 140rpx;
   border-radius: 8rpx;
-  margin-right: 20rpx;
+  margin-right: 15rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.2);
 }
 
 .history-info {
@@ -213,9 +454,9 @@
 }
 
 .history-prompt {
-  font-size: 26rpx;
-  color: #333;
-  line-height: 36rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 34rpx;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -229,29 +470,29 @@
 }
 
 .history-style {
-  font-size: 24rpx;
-  color: #DC143C;
-  background-color: rgba(220, 20, 60, 0.1);
-  padding: 4rpx 12rpx;
-  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: rgba(255, 90, 200, 0.9);
+  background-color: rgba(255, 90, 200, 0.1);
+  padding: 3rpx 12rpx;
+  border-radius: 15rpx;
 }
 
 .history-time {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .history-empty {
   text-align: center;
-  padding: 40rpx 0;
-  color: #999;
-  font-size: 28rpx;
+  padding: 30rpx 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 26rpx;
 }
 
 .clear-history {
   text-align: center;
-  padding: 20rpx 0;
-  color: #999;
-  font-size: 26rpx;
-  text-decoration: underline;
+  padding: 15rpx 0;
+  color: rgba(255, 90, 200, 0.8);
+  font-size: 24rpx;
+  margin-top: 15rpx;
 } 

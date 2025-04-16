@@ -1,10 +1,155 @@
 <!--pages/draw/draw.wxml-->
 <view class="container">
-  <view class="page-header">
-    <view class="page-title">AI绘画</view>
-  </view>
-  
-  <view class="content">
-    <view class="placeholder-text">AI绘画功能开发中</view>
+  <view class="main-content">
+    <!-- 输入区域 -->
+    <view class="input-section">
+      <view class="section-title">描述你想要的画面</view>
+      <view class="prompt-container">
+        <textarea class="prompt-input" placeholder="例如：一片星空下的湖泊，倒映着满天繁星" value="{{prompt}}" bindinput="onPromptInput" maxlength="500" auto-height></textarea>
+        <view class="prompt-counter">{{prompt.length}}/500</view>
+      </view>
+      
+      <!-- 图像比例选择 -->
+      <view class="ratio-section">
+        <view class="section-title">选择图像比例</view>
+        <view class="ratio-list">
+          <view class="ratio-item {{params.ratio === '1:1' ? 'selected' : ''}}" 
+                bindtap="selectRatio" data-ratio="1:1">
+            <view class="ratio-preview square"></view>
+            <text>1:1</text>
+          </view>
+          <view class="ratio-item {{params.ratio === '4:3' ? 'selected' : ''}}" 
+                bindtap="selectRatio" data-ratio="4:3">
+            <view class="ratio-preview rectangle-4-3"></view>
+            <text>4:3</text>
+          </view>
+          <view class="ratio-item {{params.ratio === '3:4' ? 'selected' : ''}}" 
+                bindtap="selectRatio" data-ratio="3:4">
+            <view class="ratio-preview rectangle-3-4"></view>
+            <text>3:4</text>
+          </view>
+          <view class="ratio-item {{params.ratio === '16:9' ? 'selected' : ''}}" 
+                bindtap="selectRatio" data-ratio="16:9">
+            <view class="ratio-preview widescreen"></view>
+            <text>16:9</text>
+          </view>
+          <view class="ratio-item {{params.ratio === '9:16' ? 'selected' : ''}}" 
+                bindtap="selectRatio" data-ratio="9:16">
+            <view class="ratio-preview portrait"></view>
+            <text>9:16</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 风格和参数设置并排布局 -->
+    <view class="settings-row">
+      <!-- 风格选择 -->
+      <view class="style-section">
+        <view class="section-title">选择风格</view>
+        <scroll-view class="style-list" scroll-x="true" enhanced show-scrollbar="{{false}}">
+          <view class="style-item {{item.selected ? 'selected' : ''}}" 
+                wx:for="{{styles}}" 
+                wx:key="id" 
+                bindtap="selectStyle" 
+                data-id="{{item.id}}">
+            {{item.name}}
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+    
+    <!-- 参数设置 -->
+    <view class="params-section">
+      <view class="param-item">
+        <view class="param-header">
+          <text class="param-name">创意度</text>
+          <text class="param-value">{{params.creativity}}</text>
+        </view>
+        <view class="slider-container">
+          <view class="slider-bg creativity-bg"></view>
+          <slider class="param-slider" min="0" max="100" value="{{params.creativity}}" 
+                  activeColor="transparent" backgroundColor="transparent" 
+                  block-size="20" block-color="rgba(255, 90, 200, 0.9)" 
+                  bindchange="onCreativityChange" show-value="{{false}}"/>
+        </view>
+        <view class="param-desc">值越高，生成的内容越有创意但可能偏离提示词</view>
+      </view>
+      
+      <view class="param-item">
+        <view class="param-header">
+          <text class="param-name">图像质量</text>
+          <text class="param-value">{{params.quality}}</text>
+        </view>
+        <view class="slider-container">
+          <view class="slider-bg quality-bg"></view>
+          <slider class="param-slider" min="0" max="100" value="{{params.quality}}" 
+                  activeColor="transparent" backgroundColor="transparent" 
+                  block-size="20" block-color="rgba(120, 90, 255, 0.9)" 
+                  bindchange="onQualityChange" show-value="{{false}}"/>
+        </view>
+        <view class="param-desc">值越高，生成的图像质量越好但耗时更长</view>
+      </view>
+    </view>
+    
+    <!-- 生成按钮 -->
+    <view class="btn-section">
+      <button class="generate-btn {{isGenerating ? 'generating' : ''}}" bindtap="generateImage" disabled="{{isGenerating}}">
+        <view class="btn-content">
+          <view wx:if="{{isGenerating}}" class="loading-icon"></view>
+          <text>{{isGenerating ? '生成中...' : '开始创作'}}</text>
+        </view>
+      </button>
+    </view>
+    
+    <!-- 结果展示 -->
+    <view class="result-section" wx:if="{{generatedImage}}">
+      <view class="section-title">创作结果</view>
+      <view class="image-container">
+        <image class="generated-image" src="{{generatedImage}}" mode="widthFix" show-menu-by-longpress></image>
+        <view class="image-actions">
+          <view class="action-item" bindtap="saveImage">
+            <image class="action-icon" src="/static/images/icons/save.png"></image>
+            <text>保存</text>
+          </view>
+          <view class="action-item" bindtap="shareImage">
+            <image class="action-icon" src="/static/images/icons/share.png"></image>
+            <text>分享</text>
+          </view>
+          <view class="action-item" bindtap="copyPrompt">
+            <image class="action-icon" src="/static/images/icons/copy.png"></image>
+            <text>复制提示词</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 历史记录 -->
+    <view class="history-section">
+      <view class="history-header" bindtap="toggleHistory">
+        <view class="section-title">历史记录</view>
+        <image class="arrow-icon" src="/static/images/icons/{{showHistory ? 'arrow-up' : 'arrow-down'}}.png"></image>
+      </view>
+      
+      <view class="history-list" wx:if="{{showHistory}}">
+        <view wx:if="{{history.length === 0}}" class="history-empty">
+          暂无历史记录
+        </view>
+        <view class="history-item" wx:for="{{history}}" wx:key="id" bindtap="reuseHistoryItem" data-index="{{index}}">
+          <image class="history-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+          <view class="history-info">
+            <view class="history-prompt">{{item.prompt}}</view>
+            <view class="history-meta">
+              <view class="history-style">{{item.style}}</view>
+              <view class="history-time">{{item.timeStr || '刚刚'}}</view>
+            </view>
+          </view>
+        </view>
+        
+        <view class="clear-history" wx:if="{{history.length > 0}}" bindtap="clearHistory">
+          清空历史记录
+        </view>
+      </view>
+    </view>
   </view>
 </view> 
