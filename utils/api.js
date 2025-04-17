@@ -1,7 +1,7 @@
 const app = getApp()
 
 // 配置参数
-const DEEPSEEK_API_KEY = 'sk-4c1d1a5bdd5d4d0db21d418117cb406b'; // 您的DeepSeek API密钥，请替换为实际密钥
+const DEEPSEEK_API_KEY = ''; // 您的DeepSeek API密钥，请替换为实际密钥
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions'; // Deepseek API 地址
 
 // 基础请求封装
