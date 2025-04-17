@@ -61,32 +61,15 @@ module.exports = {
   generateImage: (params, progressCallback) => {
     console.log('模拟生成图片:', params)
     return new Promise((resolve) => {
-      // 模拟网络延迟和进度更新
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        if (progress < 95) {  // 只更新到95%，最后5%留给结果处理
-          // 不同阶段速度不同
-          const increment = progress < 30 ? 5 : (progress < 60 ? 3 : (progress < 80 ? 2 : 1));
-          progress += increment;
-          if (typeof progressCallback === 'function') {
-            progressCallback(progress);
-          }
-        }
-        
-        // 当进度达到95时，停止自动更新，等待最终处理
-        if (progress >= 95) {
-          clearInterval(progressInterval);
-        }
-      }, 200);
+      // 删除内部模拟进度更新部分，进度更新由调用方进行模拟
+      // 仅在必要的节点发送进度通知
       
-      // 模拟API调用延迟
+      // 模拟3秒后返回图片
       setTimeout(() => {
-        // 解决最后5%的进度和显示最终结果
+        // 通知进度达到100%
         if (typeof progressCallback === 'function') {
           progressCallback(100);
         }
-        
-        clearInterval(progressInterval);
         
         // 根据不同风格返回不同的模拟图片
         let imageUrl = '/static/images/sample_generated.jpg';

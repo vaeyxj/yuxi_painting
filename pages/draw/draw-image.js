@@ -92,9 +92,34 @@ const drawImage = {
       ratio: imageParams.ratio // 添加比例信息
     }
     
-    // 进度回调函数，只更新进度条，不再显示弹窗
+    // 使用模拟进度更新，确保视觉平滑
+    let lastProgress = 0;
+    const simulateProgress = () => {
+      // 模拟进度逐步增加
+      setTimeout(() => {
+        if (lastProgress < 95) {
+          // 不同阶段，增长速度不同
+          const increment = lastProgress < 30 ? 5 : (lastProgress < 60 ? 3 : (lastProgress < 85 ? 2 : 1));
+          lastProgress += increment;
+          
+          // 更新UI
+          setData({
+            generationProgress: lastProgress,
+            showProgress: true
+          });
+          
+          // 继续模拟进度
+          simulateProgress();
+        }
+      }, 300);
+    };
+    
+    // 开始模拟进度更新
+    simulateProgress();
+    
+    // 进度回调函数，处理实际进度更新
     const updateProgress = (progress) => {
-      console.log('更新进度:', progress);
+      console.log('API实际进度:', progress);
       
       // 如果有外部传入的进度回调，先调用
       if (typeof onProgress === 'function') {
@@ -118,8 +143,16 @@ const drawImage = {
         return;
       }
       
-      // 更新进度条状态
-      setData({ generationProgress: progress });
+      // 如果实际进度大于模拟进度，则更新
+      if (progress > lastProgress) {
+        lastProgress = progress;
+        
+        // 强制立即更新UI，不等待模拟进度
+        setData({
+          showProgress: true,
+          generationProgress: Math.floor(progress)
+        });
+      }
     };
     
     // 调用后端API生成图片
@@ -137,7 +170,10 @@ const drawImage = {
         console.log(`经过时间: ${elapsedTime}ms, 延迟关闭: ${delayToClose}ms`);
         
         // 在延迟结束前，先将进度设为100%
-        setData({ generationProgress: 100 });
+        setData({ 
+          generationProgress: 100,
+          showProgress: true
+        });
         
         // 延迟更新UI
         setTimeout(() => {

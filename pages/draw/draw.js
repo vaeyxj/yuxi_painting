@@ -187,6 +187,10 @@ Page({
       isGenerating: this.data.isGenerating,
       history: this.data.history,
       setData: this.setData.bind(this)
+    }, {
+      onProgress: (progress) => {
+        console.log('外部进度回调:', progress);
+      }
     });
   },
 

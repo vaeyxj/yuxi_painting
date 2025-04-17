@@ -103,7 +103,7 @@
     </view>
     
     <!-- 生成进度条 -->
-    <view class="progress-section" wx:if="{{showProgress && isGenerating}}">
+    <view class="progress-section" wx:if="{{showProgress}}" style="display: {{showProgress ? 'block' : 'none'}}">
       <view class="progress-bar-container">
         <view class="progress-bar" style="width: {{generationProgress}}%;"></view>
       </view>

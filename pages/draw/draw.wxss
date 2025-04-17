@@ -298,25 +298,27 @@
 
 /* 进度条样式 */
 .progress-section {
-  margin: 15rpx 0 30rpx;
-  padding: 0 20rpx;
+  margin: 30rpx 0;
+  padding: 20rpx;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
 .progress-bar-container {
-  width: 100%;
-  height: 12rpx;
+  height: 20rpx;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10rpx;
   overflow: hidden;
-  margin-bottom: 12rpx;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10rpx;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, rgba(120, 90, 255, 0.8), rgba(255, 90, 200, 0.8));
+  background: linear-gradient(90deg, #36D1DC 0%, #5B86E5 100%);
   border-radius: 10rpx;
-  transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: width 0.3s ease-out;
   position: relative;
   overflow: hidden;
 }
@@ -340,11 +342,10 @@
 }
 
 .progress-text {
-  text-align: center;
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .generate-btn {
