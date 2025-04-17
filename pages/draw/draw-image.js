@@ -35,6 +35,9 @@ const drawImage = {
     // 记录开始时间，用于确保进度条至少显示3秒
     const startTime = Date.now();
     
+    // 记录模拟进度更新的计时器ID，便于清理
+    let simulateProgressTimer = null;
+    
     // 设置生成状态
     setData({
       isGenerating: true,
@@ -46,9 +49,20 @@ const drawImage = {
       imageLoadError: false // 重置图片错误状态
     });
     
+    // 清理函数，确保所有计时器都被清除
+    const cleanup = () => {
+      if (progressTimeoutId) {
+        clearTimeout(progressTimeoutId);
+      }
+      if (simulateProgressTimer) {
+        clearTimeout(simulateProgressTimer);
+      }
+    };
+    
     // 设置一个超时保护，确保进度条最终会关闭
     const progressTimeoutId = setTimeout(() => {
       console.log('应用进度条超时保护');
+      cleanup();
       setData({
         showProgress: false,
         isGenerating: false
@@ -94,10 +108,17 @@ const drawImage = {
     
     // 使用模拟进度更新，确保视觉平滑
     let lastProgress = 0;
+    let isGenerationCompleted = false;
+    
     const simulateProgress = () => {
+      // 如果生成已完成，不再继续模拟
+      if (isGenerationCompleted) {
+        return;
+      }
+      
       // 模拟进度逐步增加
-      setTimeout(() => {
-        if (lastProgress < 95) {
+      simulateProgressTimer = setTimeout(() => {
+        if (lastProgress < 95 && !isGenerationCompleted) {
           // 不同阶段，增长速度不同
           const increment = lastProgress < 30 ? 5 : (lastProgress < 60 ? 3 : (lastProgress < 85 ? 2 : 1));
           lastProgress += increment;
@@ -135,7 +156,8 @@ const drawImage = {
       progress = Math.max(0, Math.min(100, progress));
       
       // 如果已经不在生成状态，直接关闭进度条
-      if (!params.isGenerating) {
+      if (!params.isGenerating || isGenerationCompleted) {
+        cleanup();
         setData({ 
           showProgress: false,
           generationProgress: 0
@@ -153,13 +175,21 @@ const drawImage = {
           generationProgress: Math.floor(progress)
         });
       }
+      
+      // 如果进度到达100%，标记生成完成
+      if (progress >= 100) {
+        isGenerationCompleted = true;
+      }
     };
     
     // 调用后端API生成图片
     api.generateImage(requestParams, updateProgress)
       .then(res => {
-        // 清除超时保护
-        clearTimeout(progressTimeoutId);
+        // 标记生成已完成
+        isGenerationCompleted = true;
+        
+        // 清除所有计时器
+        cleanup();
         
         // 计算经过的时间
         const elapsedTime = Date.now() - startTime;
@@ -187,15 +217,25 @@ const drawImage = {
           
           console.log('生成成功，关闭进度条');
           
-          // 更新生成图片和描述，关闭进度显示
-          setData({
+          // 确保关闭进度条
+          const completeUpdate = {
             isGenerating: false,
             generatedImage: result.imageUrl,
             imageDescription: result.description,
-            showProgress: false,
+            showProgress: false,  // 明确设置为false
             generationProgress: 100,
             isImageLoading: true // 设置为正在加载图片
-          });
+          };
+          
+          // 更新生成图片和描述，关闭进度显示
+          setData(completeUpdate);
+          
+          // 再次确保进度条关闭（双重保障）
+          setTimeout(() => {
+            setData({
+              showProgress: false
+            });
+          }, 200);
           
           // 添加到历史记录
           const newHistory = history ? [...history] : [];
@@ -235,8 +275,11 @@ const drawImage = {
         }, delayToClose);
       })
       .catch(err => {
-        // 清除超时保护
-        clearTimeout(progressTimeoutId);
+        // 标记生成已完成
+        isGenerationCompleted = true;
+        
+        // 清除所有计时器
+        cleanup();
         
         // 计算经过的时间
         const elapsedTime = Date.now() - startTime;
@@ -257,6 +300,13 @@ const drawImage = {
             isImageLoading: false,
             imageLoadError: false // 由于生成失败，所以不设置为图片错误状态
           });
+          
+          // 再次确保进度条关闭（双重保障）
+          setTimeout(() => {
+            setData({
+              showProgress: false
+            });
+          }, 200);
           
           // 显示错误提示
           wx.showToast({
