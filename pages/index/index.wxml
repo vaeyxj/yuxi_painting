@@ -1,4 +1,6 @@
 <!--index.wxml-->
+<!-- 引入通用工具 wxs 模块 -->
+<wxs src="../../utils/common.wxs" module="common" />
 <view class="container">
   <!-- 英雄区域 - 赛博风格网格背景 -->
   <view class="hero-section" bindtap="onHeroTap">
@@ -10,16 +12,17 @@
       
       <!-- 中央AI机器人元素 -->
       <view class="central-element elevation-card">
-        <image class="ai-robot" src="/static/images/hero/ai-robot.png" mode="aspectFit"></image>
+        <!-- 使用全局 wxs 模块处理路径 -->
+        <image class="ai-robot" src="{{common.getStaticUrl('/static/images/hero/ai-robot.png')}}" mode="aspectFit"></image>
         <view class="glow-effect"></view>
       </view>
       
       <!-- 彩色颜料飞溅效果 -->
       <view class="color-splash">
         <!-- 图标和交互元素 -->
-        <image class="interaction-icon chat floating" src="/static/images/icons/chat.png" mode="aspectFit"></image>
-        <image class="interaction-icon video floating-delay" src="/static/images/icons/video.png" mode="aspectFit"></image>
-        <image class="interaction-icon cloud floating-delay-2" src="/static/images/icons/cloud.png" mode="aspectFit"></image>
+        <image class="interaction-icon chat floating" src="{{common.getStaticUrl('/static/images/icons/chat.png')}}" mode="aspectFit"></image>
+        <image class="interaction-icon video floating-delay" src="{{common.getStaticUrl('/static/images/icons/video.png')}}" mode="aspectFit"></image>
+        <image class="interaction-icon cloud floating-delay-2" src="{{common.getStaticUrl('/static/images/icons/cloud.png')}}" mode="aspectFit"></image>
       </view>
       
       <!-- 3D装饰元素 -->
@@ -61,7 +64,7 @@
           <view class="work-meta">
             <view class="work-author">{{item.author}}</view>
             <view class="work-likes">
-              <image class="like-icon" src="/static/images/icons/like.png"></image>
+              <image class="like-icon" src="{{common.getStaticUrl('/static/images/icons/like.png')}}"></image>
               <text>{{item.likes}}</text>
             </view>
           </view>

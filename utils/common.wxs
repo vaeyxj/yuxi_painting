@@ -1,0 +1,33 @@
+/**
+ * 通用工具函数 - WXS 模块
+ * 用于在 WXML 中处理静态资源路径等
+ */
+
+// 静态资源域名
+var STATIC_DOMAIN = "https://yuxi-painting.tos-cn-beijing.volces.com";
+
+/**
+ * 获取静态资源完整路径
+ * @param {string} path - 资源路径，以 /static/ 开头
+ * @return {string} 完整的资源URL
+ */
+function getStaticUrl(path) {
+  if (!path) return "";
+  
+  // 如果路径已经是完整URL，直接返回
+  if (path.indexOf("http://") === 0 || path.indexOf("https://") === 0) {
+    return path;
+  }
+  
+  // 处理以 /static/ 开头的路径
+  if (path.indexOf("/static/") === 0) {
+    return STATIC_DOMAIN + path;
+  }
+  
+  return path;
+}
+
+// 导出工具函数
+module.exports = {
+  getStaticUrl: getStaticUrl
+}; 

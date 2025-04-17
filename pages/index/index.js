@@ -1,6 +1,7 @@
 const app = getApp()
 
-Page({
+// 使用 app 的 enhancePage 函数包装 Page 配置
+Page(app.enhancePage({
   data: {
     userInfo: {},
     hasUserInfo: false,
@@ -13,28 +14,28 @@ Page({
       {
         id: 'draw',
         name: 'AI绘画',
-        icon: '/static/images/features/palette.png',
+        icon: app.globalData.STATIC_DOMAIN + '/static/images/features/palette.png',
         path: '/pages/draw/draw',
         desc: '一键将你的想象变为现实'
       },
       {
         id: 'anime',
         name: 'AI转动漫',
-        icon: '/static/images/features/anime-avatar.png',
+        icon: app.globalData.STATIC_DOMAIN + '/static/images/features/anime-avatar.png',
         path: '/pages/anime/anime',
         desc: '瞬间变身你专属的二次元形象'
       },
       {
         id: 'face-swap',
         name: 'AI换脸',
-        icon: '/static/images/features/face-swap.png',
+        icon: app.globalData.STATIC_DOMAIN + '/static/images/features/face-swap.png',
         path: '/pages/face-swap/face-swap',
         desc: '突破现实界限，体验不同身份'
       },
       {
         id: 'avatar',
         name: 'AI头像生成器',
-        icon: '/static/images/features/avatar-maker.png',
+        icon: app.globalData.STATIC_DOMAIN + '/static/images/features/avatar-maker.png',
         path: '/pages/avatar/avatar',
         desc: '打造专属你的数字化形象'
       }
@@ -55,28 +56,17 @@ Page({
         icon: '/static/images/icons/cloud.png',
       }
     ],
-    
-    // 精选作品展示
-    featuredWorks: [],
-    // 轮播图数据
-    banners: [],
-    // 英雄区域数据
-    heroData: {
-      robotIcon: '/static/images/hero/ai-robot.png',
-      speechBubble: '世界',
-      controlText: '玩法多样'
-    },
-    // 会员信息
-    membershipInfo: {
-      title: '开通会员',
-      desc: '解锁全部高级功能，享受无限创作'
-    },
-    
     // 当前激活的选项卡
     activeTab: 'home'
   },
   
   onLoad() {
+    console.log('index onLoad');
+    // 直接在页面数据中添加 getStaticUrl 函数
+    this.setData({
+      getStaticUrl: app.getStaticUrl
+    });
+
     if (wx.getUserProfile) {
       this.setData({
         canIUseGetUserProfile: true
@@ -87,6 +77,19 @@ Page({
     this.getBanners()
     // 获取精选作品
     this.getFeaturedWorks()
+    
+    // 处理静态资源路径
+    this.processStaticResources()
+  },
+  
+  // 处理静态资源路径
+  processStaticResources() {
+    // 处理features数据中的icon字段
+    const features = app.processStaticPaths(this.data.features, ['icon']);
+    // 处理interactionIcons数据中的icon字段
+    const interactionIcons = app.processStaticPaths(this.data.interactionIcons, ['icon']);
+    
+    this.setData({ features, interactionIcons });
   },
   
   // 获取用户信息
@@ -106,7 +109,7 @@ Page({
   goToDrawPage() {
     console.log('跳转到AI绘画页面');
     // 标记来源
-    getApp().globalData.drawPageSource = 'homepage';
+    app.globalData.drawPageSource = 'homepage';
     // 使用switchTab跳转到tabBar页面
     wx.switchTab({
       url: '/pages/draw/draw'
@@ -134,63 +137,73 @@ Page({
   getBanners() {
     // 这里应该请求后端接口获取数据
     // 以下为模拟数据
+    const banners = [
+      {
+        id: 1,
+        imageUrl: '/static/images/banners/banner1.jpg',
+        linkUrl: '/pages/draw/draw'
+      },
+      {
+        id: 2,
+        imageUrl: '/static/images/banners/banner2.png',
+        linkUrl: '/pages/dress/dress'
+      },
+      {
+        id: 3,
+        imageUrl: '/static/images/banners/banner3.png',
+        linkUrl: '/pages/expand/expand'
+      }
+    ];
+    
+    // 处理静态资源路径
+    const processedBanners = app.processStaticPaths(banners, ['imageUrl']);
+    
     this.setData({
-      banners: [
-        {
-          id: 1,
-          imageUrl: '/static/images/banners/banner1.jpg',
-          linkUrl: '/pages/draw/draw'
-        },
-        {
-          id: 2,
-          imageUrl: '/static/images/banners/banner2.png',
-          linkUrl: '/pages/dress/dress'
-        },
-        {
-          id: 3,
-          imageUrl: '/static/images/banners/banner3.png',
-          linkUrl: '/pages/expand/expand'
-        }
-      ]
-    })
+      banners: processedBanners
+    });
   },
   
   // 获取精选作品
   getFeaturedWorks() {
     // 这里应该请求后端接口获取数据
     // 以下为模拟数据
+    const featuredWorks = [
+      {
+        id: 1,
+        imageUrl: '/static/images/works/work1.jpg',
+        title: '星空下的城市',
+        author: '创作者A',
+        likes: 256
+      },
+      {
+        id: 2,
+        imageUrl: '/static/images/works/work2.jpg',
+        title: '梦幻森林',
+        author: '创作者B',
+        likes: 188
+      },
+      {
+        id: 3,
+        imageUrl: '/static/images/works/work3.jpg',
+        title: '未来世界',
+        author: '创作者C',
+        likes: 342
+      },
+      {
+        id: 4,
+        imageUrl: '/static/images/works/work4.jpg',
+        title: '古典风景',
+        author: '创作者D',
+        likes: 120
+      }
+    ];
+    
+    // 处理静态资源路径
+    const processedWorks = app.processStaticPaths(featuredWorks, ['imageUrl']);
+    
     this.setData({
-      featuredWorks: [
-        {
-          id: 1,
-          imageUrl: '/static/images/works/work1.jpg',
-          title: '星空下的城市',
-          author: '创作者A',
-          likes: 256
-        },
-        {
-          id: 2,
-          imageUrl: '/static/images/works/work2.jpg',
-          title: '梦幻森林',
-          author: '创作者B',
-          likes: 188
-        },
-        {
-          id: 3,
-          imageUrl: '/static/images/works/work3.jpg',
-          title: '未来世界',
-          author: '创作者C',
-          likes: 342
-        },
-        {
-          id: 4,
-          imageUrl: '/static/images/works/work4.jpg',
-          title: '古典风景',
-          author: '创作者D',
-          likes: 120
-        }
-      ]
-    })
+      featuredWorks: processedWorks
+    });
   },
   
   // 点击作品
@@ -264,4 +277,4 @@ Page({
   onCtaTap() {
     this.goToDrawPage();
   }
-}) 
+})) 
