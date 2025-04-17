@@ -1,31 +1,52 @@
 # 工具函数目录
 
-本目录包含应用的各种工具函数和通用逻辑，用于提高代码复用性和可维护性。
+本目录包含应用的各种工具函数和UI逻辑，已完成重构以移除所有后端依赖。
+
+## 重构说明
+
+为了优化小程序包体积和加载性能，我们已经完成了以下重构：
+
+1. 移除了所有真实后端API调用代码
+2. 使用本地数据模拟替代网络请求
+3. 将所有异步操作改为基于Promise的模拟延迟实现
+4. 保留了完整的UI交互逻辑和界面流程
 
 ## 主要文件
 
-- `api.js` - API接口封装，处理与后端服务的所有通信
+- `api.js` - 模拟API接口，处理与UI的所有交互逻辑
 - `util.js` - 通用工具函数，如日期格式化、数据处理等
 
-## API 封装规范
+## 模拟API规范
 
-`api.js` 文件中封装了所有与后端交互的接口，遵循以下规范：
+`api.js` 文件中实现了所有模拟API，遵循以下规范：
 
-1. 所有 API 函数应返回 Promise 对象
-2. 统一处理请求错误和异常情况
-3. 遵循 RESTful API 设计原则
-4. 接口命名应清晰表达其功能
+1. 所有API函数返回Promise对象，保持与真实API调用一致的接口
+2. 使用`mockRequest`函数统一处理模拟延迟和响应
+3. 尽可能使用本地存储保存状态，模拟数据持久化
+4. 模拟网络请求的超时和进度回调
 
 示例：
 ```javascript
-// 获取用户信息
+// 模拟获取用户信息
 getUserInfo: () => {
-  return request('/user/info', 'GET')
+  const userInfo = wx.getStorageSync('userInfo') || {
+    nickName: '游客',
+    avatarUrl: '/static/images/default-avatar.png',
+    gender: 0,
+    memberExpireTime: new Date().getTime() + 86400000 * 7,
+    credits: 100
+  }
+  return mockRequest(userInfo)
 }
 
-// 更新用户信息
+// 模拟更新用户信息
 updateUserInfo: (userInfo) => {
-  return request('/user/update', 'POST', userInfo)
+  console.log('模拟更新用户信息:', userInfo)
+  // 更新本地存储
+  const oldUserInfo = wx.getStorageSync('userInfo') || {}
+  const newUserInfo = {...oldUserInfo, ...userInfo}
+  wx.setStorageSync('userInfo', newUserInfo)
+  return mockRequest(newUserInfo)
 }
 ```
 
@@ -33,23 +54,10 @@ updateUserInfo: (userInfo) => {
 
 `util.js` 文件中包含各种通用工具函数，遵循以下规范：
 
-1. 函数应具有单一职责，功能明确
+1. 函数具有单一职责，功能明确
 2. 提供完整的参数说明和返回值说明
 3. 考虑边界情况和错误处理
-4. 尽量保持纯函数设计，减少副作用
-
-示例：
-```javascript
-/**
- * 日期格式化
- * @param {Date} date 日期对象
- * @param {String} fmt 格式字符串
- * @return {String} 格式化后的日期字符串
- */
-const formatTime = (date, fmt = 'yyyy-MM-dd') => {
-  // 实现代码
-}
-```
+4. 不依赖后端服务，所有功能可离线使用
 
 ## 使用说明
 
@@ -59,7 +67,7 @@ const formatTime = (date, fmt = 'yyyy-MM-dd') => {
 const api = require('../../utils/api')
 const util = require('../../utils/util')
 
-// 调用 API
+// 调用模拟API
 api.getUserInfo().then(res => {
   // 处理响应
 })
@@ -67,6 +75,39 @@ api.getUserInfo().then(res => {
 // 使用工具函数
 const formattedDate = util.formatTime(new Date())
 ```
+
+## 本地存储使用
+
+为了模拟后端数据持久化，我们使用了以下本地存储键：
+
+- `userInfo` - 用户信息
+- `token` - 模拟登录令牌
+- `drawHistory` - 绘画历史记录
+
+## 静态资源文件
+
+所有模拟API返回的图片资源应放置在以下路径：
+
+- `/static/images/samples/` - 示例图片
+- `/static/images/default-avatar.png` - 默认头像
+
+## 测试说明
+
+所有功能都可以通过本地模拟数据进行测试，不依赖真实后端服务。部分功能（如会员检查）在开发环境下会随机通过一些检查，方便测试限制性功能。
+
+## 小程序分包说明
+
+为了优化小程序包体积，遵循以下分包规则：
+
+1. 主包保持最小化，只包含核心功能和首页
+2. 各功能模块（如AI绘图、社区等）使用分包加载
+3. 工具函数放在主包中，便于各分包共享使用
+
+## 优化方向
+
+1. 进一步减少静态资源大小，考虑使用CDN加载
+2. 优化本地存储使用，避免存储过大数据
+3. 实现UI组件懒加载，提高首屏加载速度
 
 # AI绘画功能技术文档
 

@@ -169,12 +169,21 @@ const saveImageToPhotosAlbum = (url) => {
 }
 
 /**
- * 检查用户是否有会员权限
+ * 检查用户是否有会员权限（本地模拟版本）
  * @return {Boolean} 是否有会员权限
  */
 const checkMemberPermission = () => {
+  // 从本地存储获取用户信息
   const userInfo = wx.getStorageSync('userInfo') || {}
-  return userInfo.memberExpireTime && new Date(userInfo.memberExpireTime) > new Date()
+  
+  // 检查是否有会员到期时间，并且是否未过期
+  const hasValidMembership = userInfo.memberExpireTime && new Date(userInfo.memberExpireTime) > new Date()
+  
+  // 本地模拟版本：添加随机因素，开发测试时有时返回true
+  const isDevelopment = __wxConfig && __wxConfig.envVersion !== 'release'
+  
+  // 生产环境严格检查，开发环境可以随机通过一些会员检查（方便测试）
+  return hasValidMembership || (isDevelopment && Math.random() > 0.3)
 }
 
 /**
