@@ -72,7 +72,7 @@ module.exports = {
         }
         
         // 根据不同风格返回不同的模拟图片
-        let imageUrl = '/static/images/sample_generated.jpg';
+        let imageUrl = app.globalData.STATIC_DOMAIN + '/static/images/sample_generated.jpg';
         
         // 如果有风格参数，返回对应风格的图片
         // if (params.style) {
