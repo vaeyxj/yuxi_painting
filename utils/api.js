@@ -75,32 +75,32 @@ module.exports = {
         let imageUrl = '/static/images/sample_generated.jpg';
         
         // 如果有风格参数，返回对应风格的图片
-        if (params.style) {
-          switch(params.style) {
-            case 'realistic':
-            case '写实风格':
-              imageUrl = '/static/images/samples/realistic.jpg';
-              break;
-            case 'cartoon':
-            case '卡通风格':
-              imageUrl = '/static/images/samples/cartoon.jpg';
-              break;
-            case 'ink':
-            case '水墨风格':
-              imageUrl = '/static/images/samples/ink.jpg';
-              break;
-            case 'oil':
-            case '油画风格':
-              imageUrl = '/static/images/samples/oil.jpg';
-              break;
-            case 'anime':
-            case '动漫风格':
-              imageUrl = '/static/images/samples/anime.jpg';
-              break;
-            default:
-              imageUrl = '/static/images/sample_generated.jpg';
-          }
-        }
+        // if (params.style) {
+        //   switch(params.style) {
+        //     case 'realistic':
+        //     case '写实风格':
+        //       imageUrl = '/static/images/samples/realistic.jpg';
+        //       break;
+        //     case 'cartoon':
+        //     case '卡通风格':
+        //       imageUrl = '/static/images/samples/cartoon.jpg';
+        //       break;
+        //     case 'ink':
+        //     case '水墨风格':
+        //       imageUrl = '/static/images/samples/ink.jpg';
+        //       break;
+        //     case 'oil':
+        //     case '油画风格':
+        //       imageUrl = '/static/images/samples/oil.jpg';
+        //       break;
+        //     case 'anime':
+        //     case '动漫风格':
+        //       imageUrl = '/static/images/samples/anime.jpg';
+        //       break;
+        //     default:
+        //       imageUrl = '/static/images/sample_generated.jpg';
+        //   }
+        // }
         
         console.log('模拟生成图片完成:', imageUrl);
         
